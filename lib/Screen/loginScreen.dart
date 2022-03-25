@@ -1,9 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Screen/signup_page.dart';
 import 'package:manage/Ultils/Navigate.dart';
-
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../Widget/bezierContainer.dart';
+import 'package:manage/Screen/signin_google.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class loginScreen extends StatefulWidget {
   loginScreenState createState() => loginScreenState();
@@ -328,6 +330,18 @@ class loginScreenState extends State<loginScreen> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 6,
+                              child: SignInButton(
+                                Buttons.Google,
+                                text: "Sign up with Google",
+                                onPressed: () {
+                                  supportSignInGoogle ggg =
+                                      supportSignInGoogle();
+                                  ggg.handleSignIn();
+                                },
                               ),
                             ),
                           ],
