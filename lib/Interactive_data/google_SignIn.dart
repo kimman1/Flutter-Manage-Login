@@ -2,30 +2,18 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
 
 class supportSignInGoogle {
-  final GoogleSignIn googleSignIn = GoogleSignIn(
-    // Optional clientId
-    scopes: <String>[
-      'email',
-      'https://www.googleapis.com/auth/contacts.readonly',
-    ],
-  );
-  Future<void> handleSignIn() async {
-    try {
-      await googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
+  GoogleSignInAccount? _currentUser;
 
-    Future<void> handleSignOut() async {
-      googleSignIn.disconnect();
-    }
+  Future<void> handleSignIn(GoogleSignIn googleSignIn) async {
+    await googleSignIn.signIn();
+    //return _currentUser;
+  }
 
-    GoogleSignInAccount? rgturnCurrentUser() {
-      GoogleSignInAccount? _currentUser;
-      googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-        _currentUser = account;
-      });
-      return _currentUser;
-    }
+  Future<void> handleSignOut(GoogleSignIn googleSignIn) async {
+    googleSignIn.disconnect();
+  }
+
+  GoogleSignInAccount? returnCurrentUser() {
+    return _currentUser;
   }
 }

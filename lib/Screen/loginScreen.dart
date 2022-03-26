@@ -4,7 +4,6 @@ import 'package:manage/Screen/signup_page.dart';
 import 'package:manage/Ultils/Navigate.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../Widget/bezierContainer.dart';
-import 'package:manage/Screen/signin_google.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class loginScreen extends StatefulWidget {
@@ -12,6 +11,24 @@ class loginScreen extends StatefulWidget {
 }
 
 class loginScreenState extends State<loginScreen> {
+  GoogleSignIn googleSignIn = GoogleSignIn(
+    // Optional clientId
+
+    scopes: <String>[
+      'email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ],
+  );
+  supportSignInGoogle _supportSignInGoogle = supportSignInGoogle();
+  GoogleSignInAccount? _currentUser;
+  Navigate navi = new Navigate();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -338,9 +355,19 @@ class loginScreenState extends State<loginScreen> {
                                 Buttons.Google,
                                 text: "Sign up with Google",
                                 onPressed: () {
-                                  supportSignInGoogle ggg =
-                                      supportSignInGoogle();
-                                  ggg.handleSignIn();
+                                  _supportSignInGoogle
+                                      .handleSignIn(googleSignIn);
+                                  googleSignIn.onCurrentUserChanged
+                                      .listen((GoogleSignInAccount? account) {
+                                    setState(() {
+                                      _currentUser = account;
+                                      if (_currentUser != null) {
+                                        navi.PushnavigateToAnotherPage(context,
+                                            SignUpPage(title: 'Login Success'));
+                                      }
+                                      print(_currentUser?.email);
+                                    });
+                                  });
                                 },
                               ),
                             ),
