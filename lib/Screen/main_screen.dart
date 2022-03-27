@@ -7,8 +7,8 @@ import 'package:manage/Ultils/Navigate.dart';
 class mainScreen extends StatefulWidget {
   var title;
 
-  supportSignInGoogle? supportGoogle;
-  GoogleSignIn? googleSignIn;
+  supportSignInGoogle? supportGoogle = null;
+  GoogleSignIn? googleSignIn = null;
   mainScreen({
     Key? key,
     this.title,
@@ -32,21 +32,23 @@ class mainScreenState extends State<mainScreen> {
           child: FlatButton(
             child: Text('Log Out'),
             onPressed: () {
-              widget.supportGoogle!.handleSignOut(widget.googleSignIn);
-              widget.googleSignIn?.onCurrentUserChanged
-                  .listen((GoogleSignInAccount? account) {
-                setState(() {
-                  _currentUser = account;
-                  if (_currentUser == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Log out Success'),
-                      duration: Duration(milliseconds: 500),
-                    ));
-                    navi.PopnavigateToAnotherPage(context);
-                    navi.PushnavigateToAnotherPage(context, loginScreen());
-                  }
+              if (widget.supportGoogle != null && widget.googleSignIn != null) {
+                widget.supportGoogle!.handleSignOut(widget.googleSignIn);
+                widget.googleSignIn?.onCurrentUserChanged
+                    .listen((GoogleSignInAccount? account) {
+                  setState(() {
+                    _currentUser = account;
+                    if (_currentUser == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Log out Success'),
+                        duration: Duration(milliseconds: 500),
+                      ));
+                      navi.PopnavigateToAnotherPage(context);
+                      navi.PushnavigateToAnotherPage(context, loginScreen());
+                    }
+                  });
                 });
-              });
+              }
             },
           ),
         )));
