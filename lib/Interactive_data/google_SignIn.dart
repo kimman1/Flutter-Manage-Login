@@ -9,8 +9,8 @@ class supportSignInGoogle {
     //return _currentUser;
   }
 
-  Future<void> handleSignOut(GoogleSignIn googleSignIn) async {
-    googleSignIn.disconnect();
+  Future<void> handleSignOut(GoogleSignIn? googleSignIn) async {
+    googleSignIn?.disconnect();
   }
 
   GoogleSignInAccount? returnCurrentUser() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
+import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Screen/signup_page.dart';
 import 'package:manage/Ultils/Navigate.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
@@ -353,17 +354,25 @@ class loginScreenState extends State<loginScreen> {
                               flex: 6,
                               child: SignInButton(
                                 Buttons.Google,
-                                text: "Sign up with Google",
+                                text: "Sign In with Google",
                                 onPressed: () {
                                   _supportSignInGoogle
                                       .handleSignIn(googleSignIn);
+
                                   googleSignIn.onCurrentUserChanged
                                       .listen((GoogleSignInAccount? account) {
                                     setState(() {
                                       _currentUser = account;
                                       if (_currentUser != null) {
-                                        navi.PushnavigateToAnotherPage(context,
-                                            SignUpPage(title: 'Login Success'));
+                                        navi.PopnavigateToAnotherPage(context);
+                                        navi.PushnavigateToAnotherPage(
+                                            context,
+                                            mainScreen(
+                                              title: _currentUser?.displayName,
+                                              supportGoogle:
+                                                  _supportSignInGoogle,
+                                              googleSignIn: googleSignIn,
+                                            ));
                                       }
                                       print(_currentUser?.email);
                                     });
