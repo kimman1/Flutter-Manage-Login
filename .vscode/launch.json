@@ -5,12 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         
+        {
+            "name": "Flutter",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart"
+        },
+        
         
         {
             "name": "Flutter-Manage-Login",
             "request": "launch",
             "type": "dart",
-            "program": "${rootProject.buildDir}/${project.name}/lib/Screen/main.dart"
+            "program": "lib/main.dart"
         },
         {
             "name": "Flutter-Manage-Login (profile mode)",
@@ -30,7 +37,7 @@
             "name": "Dart",
             "type": "dart",
             "request": "launch",
-            "program": "lib/Screen/main.dart"
+            "program": "manage/lib/Screen/main.dart"
         },
         
     ]

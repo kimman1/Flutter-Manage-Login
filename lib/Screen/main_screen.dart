@@ -5,7 +5,7 @@ import 'package:manage/Screen/loginScreen.dart';
 import 'package:manage/Ultils/Navigate.dart';
 
 class mainScreen extends StatefulWidget {
-  var title;
+  var title = null;
 
   supportSignInGoogle? supportGoogle = null;
   GoogleSignIn? googleSignIn = null;
@@ -27,30 +27,42 @@ class mainScreenState extends State<mainScreen> {
           title: Text('Hi ' + widget.title),
         ),
         body: SafeArea(
-            child: Container(
-          alignment: Alignment.center,
-          child: FlatButton(
-            child: Text('Log Out'),
-            onPressed: () {
-              if (widget.supportGoogle != null && widget.googleSignIn != null) {
-                widget.supportGoogle!.handleSignOut(widget.googleSignIn);
-                widget.googleSignIn?.onCurrentUserChanged
-                    .listen((GoogleSignInAccount? account) {
-                  setState(() {
-                    _currentUser = account;
-                    if (_currentUser == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Log out Success'),
-                        duration: Duration(milliseconds: 500),
-                      ));
-                      navi.PopnavigateToAnotherPage(context);
-                      navi.PushnavigateToAnotherPage(context, loginScreen());
-                    }
-                  });
-                });
-              }
-            },
-          ),
+            child: Column(
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.purple,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50))),
+                child: Text('Log Out'),
+                onPressed: () {
+                  if (widget.supportGoogle != null &&
+                      widget.googleSignIn != null) {
+                    widget.supportGoogle!.handleSignOut(widget.googleSignIn);
+                    widget.googleSignIn?.onCurrentUserChanged
+                        .listen((GoogleSignInAccount? account) {
+                      setState(() {
+                        _currentUser = account;
+                        if (_currentUser == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Log out Success'),
+                            duration: Duration(milliseconds: 1000),
+                          ));
+                          navi.PopnavigateToAnotherPage(context);
+                          navi.PushnavigateToAnotherPage(
+                              context, loginScreen());
+                        }
+                      });
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
         )));
   }
 }
