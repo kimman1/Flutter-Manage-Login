@@ -4,10 +4,10 @@ class User {
   User({this.id, this.username, this.password});
 
   User.fromJSON(Map<String, dynamic> json)
-      : id = json["id"].toString(),
-        username = json["username"].toString(),
-        password = json["password"].toString();
+      : id = json["ID"].toString(),
+        username = json["Username"].toString(),
+        password = json["Password"].toString();
   Map toJSON() {
-    return {'id': id, 'username': username, 'password': password};
+    return {'ID': id, 'Username': username, 'Password': password};
   }
 }
