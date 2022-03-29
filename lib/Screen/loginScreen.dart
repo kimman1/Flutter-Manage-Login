@@ -1,17 +1,22 @@
+
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
+import 'package:manage/Model/UserModel.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Screen/signup_page.dart';
 import 'package:manage/Ultils/Navigate.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../Widget/bezierContainer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:manage/Interactive_data/Interactive_User.dart';
 
 class loginScreen extends StatefulWidget {
   loginScreenState createState() => loginScreenState();
 }
 
 class loginScreenState extends State<loginScreen> {
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   GoogleSignIn googleSignIn = GoogleSignIn(
     // Optional clientId
 
@@ -22,8 +27,9 @@ class loginScreenState extends State<loginScreen> {
   );
   supportSignInGoogle _supportSignInGoogle = supportSignInGoogle();
   GoogleSignInAccount? _currentUser;
-  Navigate navi = new Navigate();
+  Navigate navi = Navigate();
 
+  //Future<String> responseCode;
   @override
   void initState() {
     // TODO: implement initState
@@ -109,6 +115,7 @@ class loginScreenState extends State<loginScreen> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  controller: usernameController,
                                   style: TextStyle(
                                     fontSize: 20,
                                   ),
@@ -153,6 +160,7 @@ class loginScreenState extends State<loginScreen> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  controller: passwordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
                                     hintText: "password",
@@ -214,14 +222,33 @@ class loginScreenState extends State<loginScreen> {
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             child: InkWell(
-                                onTap: () {
-                                  Navigate navi = new Navigate();
-                                  navi.popUntil(context);
-                                  navi.PushnavigateToAnotherPage(
-                                      context, loginScreen());
+                                onTap: () async {
+                                  User userSendAPI = User();
+                                  userSendAPI.username =
+                                      usernameController.text;
+                                  userSendAPI.password =
+                                      passwordController.text;
+                                  Interactive_User inter = Interactive_User();
+                                  String responseCode1 =
+                                      await inter.getUserLogin(userSendAPI);
+                                  setState(() {
+                                    if (responseCode1 == "success") {
+                                      navi.PushnavigateToAnotherPage(
+                                          context,
+                                          mainScreen(
+                                            title: userSendAPI.username,
+                                            userFromDB: userSendAPI,
+                                          ));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text('Login Failed')));
+                                    }
+                                    ;
+                                  });
                                 },
                                 child: Ink(
-                                  child: Text(
+                                  child: const Text(
                                     'Login',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -234,7 +261,7 @@ class loginScreenState extends State<loginScreen> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           vertical: 10,
                         ),
                         alignment: Alignment.centerRight,

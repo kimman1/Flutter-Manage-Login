@@ -37,7 +37,7 @@
             "name": "Dart",
             "type": "dart",
             "request": "launch",
-            "program": "manage/lib/Screen/main.dart"
+            "program": "lib/main.dart"
         },
         
     ]
