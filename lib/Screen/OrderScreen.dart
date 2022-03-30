@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AddUserScreen extends StatefulWidget
+class OrderScreen extends StatefulWidget
 {
-  AddUserScreenState createState() => AddUserScreenState();
+  OrderScreenState createState() => OrderScreenState();
 }
-class AddUserScreenState extends State<AddUserScreen>
+class OrderScreenState extends State<OrderScreen>
 {
   Widget build (BuildContext context)
   {
@@ -17,7 +17,9 @@ class AddUserScreenState extends State<AddUserScreen>
       ),
       body: SafeArea
       (
-        child: Container(), 
+        child: Container(
+          child: Container() ,
+        ), 
       )
     ));
   }
