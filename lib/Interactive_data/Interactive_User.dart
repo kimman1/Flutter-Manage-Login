@@ -14,7 +14,6 @@ class Interactive_User {
   }
 
   Future<String> getUserLogin(User user) async {
-    //final http.Response response = UserAPI.getuserByUserObject(user);
     String dataResponse = "";
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
@@ -29,6 +28,14 @@ class Interactive_User {
     }
     //print(dataResponse);
     return dataResponse;
+  }
+  Future<String> creatUser(User user) async
+  {
+    //String dataResponse = "";
+    var bodyvalue = user.toJSON();
+    var bodydata = json.encode(bodyvalue);
+    final http.Response response = await UserAPI.createUser(user, bodydata);
+    return response.statusCode.toString();
   }
 }
 
@@ -48,6 +55,15 @@ class UserAPI
   {
     return http.post(Uri.parse(UrlAPI + 'User/GetUserByUser'),
         headers: 
+        {
+          "Content-Type": "application/json",
+        },
+        body: bodydata);
+  }
+  static Future createUser(User user, String bodydata)
+  {
+    return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
+    headers: 
         {
           "Content-Type": "application/json",
         },

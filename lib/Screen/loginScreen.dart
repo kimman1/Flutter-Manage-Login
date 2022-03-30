@@ -1,4 +1,4 @@
-
+//@dart=2.9
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
@@ -26,9 +26,9 @@ class loginScreenState extends State<loginScreen> {
     ],
   );
   supportSignInGoogle _supportSignInGoogle = supportSignInGoogle();
-  GoogleSignInAccount? _currentUser;
+  GoogleSignInAccount _currentUser;
   Navigate navi = Navigate();
-
+  String responseCode1 = "";
   //Future<String> responseCode;
   @override
   void initState() {
@@ -229,9 +229,12 @@ class loginScreenState extends State<loginScreen> {
                                   userSendAPI.password =
                                       passwordController.text;
                                   Interactive_User inter = Interactive_User();
-                                  String responseCode1 =
-                                      await inter.getUserLogin(userSendAPI);
+                                   responseCode1 = await inter.getUserLogin(userSendAPI);
                                   setState(() {
+                                    if(responseCode1 == "")
+                                    {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please waiting...')));
+                                    }
                                     if (responseCode1 == "success") {
                                       navi.PushnavigateToAnotherPage(
                                           context,
@@ -387,7 +390,7 @@ class loginScreenState extends State<loginScreen> {
                                       .handleSignIn(googleSignIn);
 
                                   googleSignIn.onCurrentUserChanged
-                                      .listen((GoogleSignInAccount? account) {
+                                      .listen((GoogleSignInAccount account) {
                                     setState(() {
                                       _currentUser = account;
                                       if (_currentUser != null) {

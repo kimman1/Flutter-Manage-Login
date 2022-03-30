@@ -1,6 +1,5 @@
 // @dart=2.9
 // ignore_for_file: deprecated_member_use, unnecessary_new
-
 import 'dart:async';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +46,8 @@ class mainScreenState extends State<mainScreen> {
         appBar: AppBar(
           title: Text('Hi ' + widget.title),
         ),
-        body: SafeArea(
+        body:
+        SafeArea(
             child: Column(
           children: [
             Container(
@@ -95,26 +95,42 @@ class mainScreenState extends State<mainScreen> {
                 },
               ),
             ),
+            SizedBox
+            (
+             height: 10, 
+            ),
             FutureBuilder
             (
                 future: listUser,
                 builder:
                     (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) 
+                      if(snapshot.connectionState == ConnectionState.waiting)
+                      {
+                        return CircularProgressIndicator(color: Colors.cyanAccent);
+                      }
+                  else if (snapshot.connectionState == ConnectionState.done) 
                   {
                     return (Expanded(
-                        child: ListView.builder(
+                        child:
+                          RefreshIndicator
+                          (
+                            child: ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
                             itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
                               return Column(
                                 children: [
-                                  SizedBox(
+                                  SizedBox
+                                  (
                                     height: 5,
                                   ),
-                                  GestureDetector(
-                                    child: Column(
+                                  GestureDetector
+                                  (
+                                    child: Column
+                                    (
                                       children: [
-                                        Container(
+                                        Container
+                                        (
                                           alignment: Alignment.topLeft,
                                           decoration: const BoxDecoration(
                                               borderRadius: BorderRadius.all(
@@ -123,9 +139,9 @@ class mainScreenState extends State<mainScreen> {
                                             child: ListTile(
                                                 title: Text(snapshot
                                                     .data[index].username),
-                                                leading: const CircleAvatar(
-                                                  backgroundImage: AssetImage(
-                                                      "12693195.jpg"),
+                                                leading:  CircleAvatar(
+                                                  
+                                                  backgroundImage: AssetImage('assets/images/12693195.jpeg'),
                                                 ),
                                                 trailing: Icon(Icons.star)),
                                           ),
@@ -133,6 +149,7 @@ class mainScreenState extends State<mainScreen> {
                                       ],
                                     ),
                                     onTap: () => {
+                                      
                                       setState(() {
                                         print(snapshot.data[index].id);
                                       })
@@ -140,12 +157,25 @@ class mainScreenState extends State<mainScreen> {
                                   )
                                 ],
                               );
-                            })
-                            ));
+                            }), 
+                            onRefresh:() async 
+                            {
+                              Future<List<User>> listResponse;
+                              listResponse =  pullRefresh();
+                              
+                              listResponse.whenComplete(() => {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('done')))
+                              }); 
+                              setState(() {
+                                listUser =  listResponse;
+                              });
+                            })));
                   } 
                   else 
                   {
-                    return Container();
+                    return Container(
+                     
+                    );
                   }
                 }),
           ],
@@ -174,6 +204,13 @@ class mainScreenState extends State<mainScreen> {
               )
             ],
           )
-        );
+        ,
+          );
   }
+}
+Future<List<User>> pullRefresh() 
+{
+  Interactive_User inter = Interactive_User();
+  var listRefreshUser =   inter.getAllUser();
+  return listRefreshUser;
 }
