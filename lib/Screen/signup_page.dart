@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:manage/Interactive_data/Interactive_User.dart';
+import 'package:manage/Model/UserModel.dart';
+import 'package:manage/Ultils/Navigate.dart';
 import 'package:manage/Widget/bezierContainer.dart';
 import 'package:manage/Screen/loginScreen.dart';
 
@@ -14,6 +18,9 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passWordController = TextEditingController();
+  Navigate navi = Navigate();
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -125,6 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  controller: userNameController,
                                   style: TextStyle(
                                     fontSize: 20,
                                   ),
@@ -168,6 +176,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  controller: userNameController,
                                   style: TextStyle(
                                     fontSize: 20,
                                   ),
@@ -211,6 +220,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  controller: passWordController,
                                   style: TextStyle(
                                     fontSize: 20,
                                   ),
@@ -318,10 +328,23 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           child: Container(
                             width: MediaQuery.of(context).size.width,
-                            child: FlatButton(
+                            child: ElevatedButton(
+                              
                                 onPressed: () {
-                                  setState(() {
-                                    print('pressed');
+                                  
+                                  setState(() async {
+                                   User userSendAPI = User();
+                                   userSendAPI.username = userNameController.text;
+                                    userSendAPI.password = passWordController.text;
+                                    Interactive_User inter = Interactive_User();
+                                    String result = await inter.creatUser(userSendAPI);
+                                  
+                                      return 
+                                      (
+                                        _showCupertinoDialog(result, context)
+                                        
+                                      );
+                                    
                                   });
                                 },
                                 child: Text(
@@ -388,4 +411,35 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+   _dismissDialog() {
+    Navigator.pop(context);
+  }
+  void _showCupertinoDialog(String reponseCode, BuildContext contextSignUpPage) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          String status = "";
+          if(reponseCode == "200")
+          {
+            status = 'Create User Success';
+          }
+          else if(reponseCode == "404")
+          {
+            status = 'Create User Fail';
+          }
+          return CupertinoAlertDialog(
+            title: Text('Reponses Code: ' + reponseCode),
+            content: Text(status),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    _dismissDialog();
+                    navi.PopnavigateToAnotherPage(contextSignUpPage);
+                  },
+                  child: Text('Close')),
+            ],
+          );
+        });
+  }
 }
+

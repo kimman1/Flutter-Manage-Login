@@ -8,6 +8,7 @@ import 'package:manage/Interactive_data/Interactive_User.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
 import 'package:manage/Screen/loginScreen.dart';
+import 'package:manage/Screen/signup_page.dart';
 import 'package:manage/Ultils/Navigate.dart';
 
 class mainScreen extends StatefulWidget {
@@ -15,15 +16,14 @@ class mainScreen extends StatefulWidget {
 
   supportSignInGoogle supportGoogle = null;
   GoogleSignIn googleSignIn = null;
+  var userFromDB = null;
 
-  var userFromDB;
   mainScreen({
     Key key,
     this.title,
     this.supportGoogle,
     this.googleSignIn,
-    this.userFromDB,
-  }) : super(key: key);
+     this.userFromDB}) : super(key: key);
   mainScreenState createState() => mainScreenState();
 }
 
@@ -139,8 +139,7 @@ class mainScreenState extends State<mainScreen> {
                                             child: ListTile(
                                                 title: Text(snapshot
                                                     .data[index].username),
-                                                leading:  CircleAvatar(
-                                                  
+                                                leading:  const CircleAvatar(
                                                   backgroundImage: AssetImage('assets/images/12693195.jpeg'),
                                                 ),
                                                 trailing: Icon(Icons.star)),
@@ -195,9 +194,9 @@ class mainScreenState extends State<mainScreen> {
                 child: Icon(Icons.add, color: Colors.white),
                 backgroundColor: Colors.green,
                 onTap: () => {
-                  navi.PushnavigateToAnotherPage(context, loginScreen())
+                  navi.PushnavigateToAnotherPage(context, SignUpPage())
                 }, 
-                label: 'Add',
+                label: 'Add new User',
                 labelStyle:
                     TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
                 labelBackgroundColor: Colors.black,

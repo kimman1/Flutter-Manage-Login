@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
+import 'package:manage/Screen/OrderScreen.dart';
+import 'package:manage/Screen/SelectionScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Screen/signup_page.dart';
 import 'package:manage/Ultils/Navigate.dart';
@@ -15,6 +17,7 @@ class loginScreen extends StatefulWidget {
 }
 
 class loginScreenState extends State<loginScreen> {
+  String dropdownValue = 'Cafe Manager';
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   GoogleSignIn googleSignIn = GoogleSignIn(
@@ -185,6 +188,30 @@ class loginScreenState extends State<loginScreen> {
                           ),
                         ],
                       ),
+                      DropdownButton<String>
+                        (
+                            value: dropdownValue,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                          style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String newValue)
+                          {
+                            setState(() {
+                              dropdownValue = newValue;
+                            });
+                          },
+                          items: <String>['Cafe Manager', 'Schedule Manager']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList()
+                      ),
                       SizedBox(
                         height: 20,
                       ),
@@ -235,19 +262,30 @@ class loginScreenState extends State<loginScreen> {
                                     {
                                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please waiting...')));
                                     }
-                                    if (responseCode1 == "success") {
-                                      navi.PushnavigateToAnotherPage(
-                                          context,
-                                          mainScreen(
-                                            title: userSendAPI.username,
-                                            userFromDB: userSendAPI,
-                                          ));
+                                    if (responseCode1 == "success" ) {
+                                      if(userSendAPI.username == "admin")
+                                      {
+                                        navi.PopnavigateToAnotherPage(context);
+                                        navi.PushnavigateToAnotherPage(context, SelectionScreen(tilte: userSendAPI.username,googleSignIn: googleSignIn, supportGoogle: _supportSignInGoogle, userFromDB: userSendAPI,));
+                                          }
+                                        else 
+                                        {
+                                          if(dropdownValue == "Cafe Manager")
+                                          {
+                                            
+                                            navi.PushnavigateToAnotherPage(context, OrderScreen());
+                                          }
+                                          else if(dropdownValue == "Schedule Manager")
+                                          {
+                                            print('not yet done');
+                                          }
+                                        }
                                     } else {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text('Login Failed')));
                                     }
-                                    ;
+                                    
                                   });
                                 },
                                 child: Ink(
@@ -268,7 +306,7 @@ class loginScreenState extends State<loginScreen> {
                           vertical: 10,
                         ),
                         alignment: Alignment.centerRight,
-                        child: Text(
+                        child: const Text(
                           'Forgot Password ?',
                           style: TextStyle(
                             fontSize: 14,
@@ -391,11 +429,15 @@ class loginScreenState extends State<loginScreen> {
 
                                   googleSignIn.onCurrentUserChanged
                                       .listen((GoogleSignInAccount account) {
-                                    setState(() {
+                                    setState(() 
+                                    {
                                       _currentUser = account;
-                                      if (_currentUser != null) {
-                                        navi.PopnavigateToAnotherPage(context);
-                                        navi.PushnavigateToAnotherPage(
+                                      if (_currentUser != null) 
+                                      {
+                                        if(_currentUser.email.toString() == "kimman06@gmail.com")
+                                        {
+                                          navi.PopnavigateToAnotherPage(context);
+                                          navi.PushnavigateToAnotherPage(
                                             context,
                                             mainScreen(
                                               title: _currentUser?.displayName,
@@ -403,9 +445,25 @@ class loginScreenState extends State<loginScreen> {
                                                   _supportSignInGoogle,
                                               googleSignIn: googleSignIn,
                                             ));
+                                        }
+                                        else
+                                        {
+                                          if(dropdownValue == "Cafe Manager")
+                                          {
+                                            navi.PopnavigateToAnotherPage(context);
+                                            navi.PushnavigateToAnotherPage(context, OrderScreen());
+                                          }
+                                          else if (dropdownValue == "Schedule Manager")
+                                          {
+                                            setState(() {
+                                              print('not yet done');
+                                            });
+                                          }
+                                        }
                                       }
-                                      print(_currentUser?.email);
-                                    });
+                                      }
+                                      
+                                    );
                                   });
                                 },
                               ),

@@ -12,7 +12,7 @@ class OrderScreenState extends State<OrderScreen>
     return(Scaffold(
       appBar: AppBar
       (
-        title: Text('Add User'),
+        title: Text('Order Screen'),
 
       ),
       body: SafeArea
