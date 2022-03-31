@@ -1,6 +1,7 @@
 // @dart=2.9
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:manage/Model/JsonReturnModel.dart';
 import 'package:manage/Model/UserModel.dart';
 
 class Interactive_User {
@@ -35,6 +36,9 @@ class Interactive_User {
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
     final http.Response response = await UserAPI.createUser(user, bodydata);
+     Iterable l = json.decode(response.body);
+      List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
+          l.map((model) => JsonReturnModel.fromJSON(model)));
     return response.statusCode.toString();
   }
 }
