@@ -6,11 +6,11 @@ import 'package:manage/Model/UserModel.dart';
 
 class Interactive_User {
   //List<User> listUser;
-  Future<List<User>> getAllUser() async 
-  {
+  Future<List<User>> getAllUser() async {
     final http.Response response = await UserAPI.getUser();
     Iterable l = json.decode(response.body);
-    List<User> listUser = List<User>.from(l.map((model) => User.fromJSON(model)));
+    List<User> listUser =
+        List<User>.from(l.map((model) => User.fromJSON(model)));
     return listUser;
   }
 
@@ -18,58 +18,56 @@ class Interactive_User {
     String dataResponse = "";
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await UserAPI.getuserByUserObject(user, bodydata);
-    if (response.statusCode == 200) 
-    {
+    final http.Response response =
+        await UserAPI.getuserByUserObject(user, bodydata);
+    if (response.statusCode == 200) {
       dataResponse = "success";
-    } 
-    else 
-    {
+    } else {
       dataResponse = "failed";
     }
     //print(dataResponse);
     return dataResponse;
   }
-  Future<String> creatUser(User user) async
-  {
-    //String dataResponse = "";
+
+  Future<String> createUser(User user) async {
+    String dataResponse = "";
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
     final http.Response response = await UserAPI.createUser(user, bodydata);
-     Iterable l = json.decode(response.body);
-      List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
-          l.map((model) => JsonReturnModel.fromJSON(model)));
-    return response.statusCode.toString();
+    Iterable l = json.decode(response.body);
+    List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
+        l.map((model) => JsonReturnModel.fromJSON(model)));
+    for (JsonReturnModel i in listResponse) {
+      dataResponse += i.message;
+    }
+    return dataResponse;
   }
 }
 
-class UserAPI 
-  {
+class UserAPI {
   static String UrlAPI = 'http://kimman.somee.com/api/';
   static Future getUser() {
     return http.get(Uri.parse(UrlAPI + 'User/GetUser'));
   }
 
-  static Future getUserById(int id)
- {
+  static Future getUserById(int id) {
     return http.get(Uri.parse(UrlAPI + 'User/GetUser/' + id.toString()));
   }
 
-  static Future getuserByUserObject(User user, String bodydata) 
-  {
+  static Future getuserByUserObject(User user, String bodydata) {
     return http.post(Uri.parse(UrlAPI + 'User/GetUserByUser'),
-        headers: 
-        {
+        headers: {
           "Content-Type": "application/json",
         },
         body: bodydata);
   }
-  static Future createUser(User user, String bodydata)
-  {
+
+  static Future createUser(User user, String bodydata) {
     return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
-    headers: 
-        {
+        headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Access-Control_Allow_Origin": "*"
         },
         body: bodydata);
   }

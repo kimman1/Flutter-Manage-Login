@@ -329,22 +329,19 @@ class _SignUpPageState extends State<SignUpPage> {
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             child: ElevatedButton(
-                              
                                 onPressed: () {
-                                  
                                   setState(() async {
-                                   User userSendAPI = User();
-                                   userSendAPI.username = userNameController.text;
-                                    userSendAPI.password = passWordController.text;
+                                    User userSendAPI = User();
+                                    userSendAPI.username =
+                                        userNameController.text;
+                                    userSendAPI.password =
+                                        passWordController.text;
                                     Interactive_User inter = Interactive_User();
-                                    String result = await inter.creatUser(userSendAPI);
-                                  
-                                      return 
-                                      (
-                                        _showCupertinoDialog(result, context)
-                                        
-                                      );
-                                    
+                                    String result =
+                                        await inter.createUser(userSendAPI);
+
+                                    return (_showCupertinoDialog(
+                                        result, context));
                                   });
                                 },
                                 child: Text(
@@ -411,20 +408,20 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
-   _dismissDialog() {
+
+  _dismissDialog() {
     Navigator.pop(context);
   }
-  void _showCupertinoDialog(String reponseCode, BuildContext contextSignUpPage) {
+
+  void _showCupertinoDialog(
+      String reponseCode, BuildContext contextSignUpPage) {
     showDialog(
         context: context,
         builder: (context) {
           String status = "";
-          if(reponseCode == "200")
-          {
+          if (reponseCode == "200") {
             status = 'Create User Success';
-          }
-          else if(reponseCode == "404")
-          {
+          } else if (reponseCode == "404") {
             status = 'Create User Fail';
           }
           return CupertinoAlertDialog(
@@ -442,4 +439,3 @@ class _SignUpPageState extends State<SignUpPage> {
         });
   }
 }
-
