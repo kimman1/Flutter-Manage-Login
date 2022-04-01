@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
-import 'package:manage/Screen/OrderScreen.dart';
+import 'package:manage/Screen/CafeManagerScreen.dart';
 import 'package:manage/Screen/SelectionScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Screen/signup_page.dart';
@@ -258,14 +258,10 @@ class loginScreenState extends State<loginScreen> {
                                   Interactive_User inter = Interactive_User();
                                    responseCode1 = await inter.getUserLogin(userSendAPI);
                                   setState(() {
-                                    if(responseCode1 == "")
-                                    {
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please waiting...')));
-                                    }
                                     if (responseCode1 == "success" ) {
                                       if(userSendAPI.username == "admin")
                                       {
-                                        navi.PopnavigateToAnotherPage(context);
+                                        //navi.PopnavigateToAnotherPage(context);
                                         navi.PushnavigateToAnotherPage(context, SelectionScreen(tilte: userSendAPI.username,googleSignIn: googleSignIn, supportGoogle: _supportSignInGoogle, userFromDB: userSendAPI,));
                                           }
                                         else 
@@ -273,7 +269,7 @@ class loginScreenState extends State<loginScreen> {
                                           if(dropdownValue == "Cafe Manager")
                                           {
                                             
-                                            navi.PushnavigateToAnotherPage(context, OrderScreen());
+                                            navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
                                           }
                                           else if(dropdownValue == "Schedule Manager")
                                           {
@@ -451,7 +447,7 @@ class loginScreenState extends State<loginScreen> {
                                           if(dropdownValue == "Cafe Manager")
                                           {
                                             navi.PopnavigateToAnotherPage(context);
-                                            navi.PushnavigateToAnotherPage(context, OrderScreen());
+                                            navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
                                           }
                                           else if (dropdownValue == "Schedule Manager")
                                           {

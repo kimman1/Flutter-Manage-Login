@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
-import 'package:manage/Screen/OrderScreen.dart';
+import 'package:manage/Screen/CafeManagerScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Ultils/Navigate.dart';
 
@@ -38,7 +38,13 @@ class SelectionScreenState extends State<SelectionScreen>
   }
   Widget build(BuildContext context)
   {
-      return(Scaffold(
+      return WillPopScope(
+        onWillPop: () {
+          navi.PopnavigateToAnotherPage(context);
+          widget.userFromDB = null;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logged out')));
+        },
+        child: Scaffold(
         appBar:  AppBar(
           title: Text('Selection Screen'),
         ),
@@ -77,7 +83,7 @@ class SelectionScreenState extends State<SelectionScreen>
                                       }
                                       else if(result == "Cafe Manager")
                                       {
-                                        navi.PushnavigateToAnotherPage(context, OrderScreen());
+                                        navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
                                         
                                         
                                         
@@ -103,6 +109,7 @@ class SelectionScreenState extends State<SelectionScreen>
             )
 
             
-      ))));
+      ))),
+      );
   }
 }

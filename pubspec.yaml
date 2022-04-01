@@ -41,6 +41,7 @@ dependencies:
   http: ^0.13.4
   google_sign_in: ^5.2.4
   flutter_speed_dial: ^5.0.0+1
+  flutter_search_bar: ^2.1.0
  
 dev_dependencies:
   flutter_test:

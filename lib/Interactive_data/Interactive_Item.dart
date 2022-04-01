@@ -2,40 +2,35 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:manage/Model/CategoryModel.dart';
+import 'package:manage/Model/ItemModel.dart';
 import 'package:manage/Model/JsonReturnModel.dart';
 import 'package:manage/Model/UserModel.dart';
 
-class Interactive_User {
+class InteractiveItem {
   //List<User> listUser;
-  Future<List<User>> getAllUser() async {
-    final http.Response response = await UserAPI.getUser();
+  Future<List<Item>> getAllItem() async {
+    final http.Response response = await ItemAPI.getItem();
     Iterable l = json.decode(response.body);
-    List<User> listUser =
-        List<User>.from(l.map((model) => User.fromJSON(model)));
-    return listUser;
+    List<Item> listItem =
+        List<Item>.from(l.map((model) => Item.fromJSON(model)));
+    return listItem;
   }
 
-  Future<String> getUserLogin(User user) async {
-    CircularProgressIndicator();
-    String dataResponse = "";
-    var bodyvalue = user.toJSON();
-    var bodydata = json.encode(bodyvalue);
-    final http.Response response =
-        await UserAPI.getuserByUserObject(user, bodydata);
-    if (response.statusCode == 200) {
-      dataResponse = "success";
-    } else {
-      dataResponse = "failed";
-    }
-    //print(dataResponse);
-    return dataResponse;
+ Future<List<Item>> getItemByCategoryID(int CatID) async {
+    final http.Response response = await ItemAPI.getItemByCategoryID(CatID);
+    Iterable l = json.decode(response.body);
+    List<Item> listItem =
+        List<Item>.from(l.map((model) => Item.fromJSON(model)));
+    return listItem;
   }
+ 
 
   Future<String> createUser(User user) async {
     String dataResponse = "";
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await UserAPI.createUser(user, bodydata);
+    final http.Response response = await ItemAPI.createUser(user, bodydata);
     Iterable l = json.decode(response.body);
     List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
         l.map((model) => JsonReturnModel.fromJSON(model)));
@@ -47,16 +42,18 @@ class Interactive_User {
   }
 }
 
-class UserAPI {
-  static String UrlAPI = 'http://kimman.somee.com/api/';
-  static Future getUser() {
-    return http.get(Uri.parse(UrlAPI + 'User/GetUser'));
+class ItemAPI {
+  static String UrlAPI = 'https://localhost:44375/api/';
+  static Future getItem() {
+    return http.get(Uri.parse(UrlAPI + 'Item/GetItem'));
   }
 
-  static Future getUserById(int id) {
-    return http.get(Uri.parse(UrlAPI + 'User/GetUser/' + id.toString()));
+  static Future getItemByID(int id) {
+    return http.get(Uri.parse(UrlAPI + 'Item/GetItemByID/' + id.toString()));
   }
-
+  static Future getItemByCategoryID(int CategoryID) {
+    return http.get(Uri.parse(UrlAPI + 'Item/GetItemByCategoryID?CategoryID=' + CategoryID.toString()));
+  }
   static Future getuserByUserObject(User user, String bodydata) {
     return http.post(Uri.parse(UrlAPI + 'User/GetUserByUser'),
         headers: {
