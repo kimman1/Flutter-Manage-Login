@@ -43,7 +43,7 @@ class InteractiveItem {
 }
 
 class ItemAPI {
-  static String UrlAPI = 'https://localhost:44375/api/';
+  static String UrlAPI = 'http://kimman.somee.com/api/';
   static Future getItem() {
     return http.get(Uri.parse(UrlAPI + 'Item/GetItem'));
   }

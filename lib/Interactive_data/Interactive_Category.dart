@@ -49,7 +49,7 @@ class InteractiveCategory {
 }
 
 class CategoryAPI {
-  static String UrlAPI = 'https://localhost:44375/api/';
+  static String UrlAPI = 'http://kimman.somee.com/api/';
   static Future getCategory() {
     return http.get(Uri.parse(UrlAPI + 'Category/GetCategory'));
   }
