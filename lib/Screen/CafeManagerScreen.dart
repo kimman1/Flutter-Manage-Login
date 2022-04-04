@@ -17,7 +17,9 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
 {
   Icon iconForListTitle;
   Future<List<Category>> listCategory;
+  List<Category> listRefreshSearchBar;
   SearchBar searchBar;
+  String searchString = "";
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   AppBar buildAppBar(BuildContext context) {
     return new AppBar(
@@ -26,8 +28,9 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
     );
   }
   void onSubmittedSearchBar(String value) {
-    setState(() => _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text('You wrote $value!'))));
+    setState(() {
+      searchString = value;
+    });
   }
   
    CafeManagerScreenState() {
@@ -38,6 +41,7 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
       buildDefaultAppBar: buildAppBar
     );
   }
+  
   @override
   void initState() {
     // TODO: implement initState
@@ -45,9 +49,12 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
     setState(() {
        InteractiveCategory inter = InteractiveCategory();
     listCategory = inter.getAllCategory();
-  
+    
     });
    }
+   
+  
+   
   @override
   Widget build (BuildContext context)
   {
@@ -81,12 +88,13 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
                       
                            if(snapshot.hasData)
                               {
-                               
+                                listRefreshSearchBar = snapshot.data;
                                   return
                                   (
                                      ListView.builder
                                     (
-                                      itemCount: snapshot.data.length,
+                                      itemCount:  
+                                      snapshot.data.length,
                                       itemBuilder: (context,index)
                                       {
                                         String dataToGetIcon = snapshot.data[index].CategoryName;
@@ -103,6 +111,7 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
                                         
                                         }
                                         return(
+                                          snapshot.data[index].CategoryName.toLowerCase().contains(searchString) ?
                                           Column(
                                             children: 
                                             [
@@ -124,12 +133,13 @@ class CafeManagerScreenState extends State<CafeManagerScreen>
                                                     navi.PushnavigateToAnotherPage(context, ItemScreen(CategoryID: snapshot.data[index].CategoryID,));
                                                
                                                     });
-                                                      },
+                                                  },
+                                                  
                                               )
                                               
                                             ],
                                           )
-                                        );
+                                    : Container());
                                       }
                                     )
                                   );

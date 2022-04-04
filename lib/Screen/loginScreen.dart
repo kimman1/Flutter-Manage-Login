@@ -1,4 +1,5 @@
 //@dart=2.9
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
@@ -256,8 +257,12 @@ class loginScreenState extends State<loginScreen> {
                                   userSendAPI.password =
                                       passwordController.text;
                                   Interactive_User inter = Interactive_User();
+                                    setState(() {
+                                      _showMaterialDialog("Notice", "Please waiting....");
+                                    });
                                    responseCode1 = await inter.getUserLogin(userSendAPI);
                                   setState(() {
+                                      _dismissDialog();
                                     if (responseCode1 == "success" ) {
                                       if(userSendAPI.username == "admin")
                                       {
@@ -559,5 +564,25 @@ class loginScreenState extends State<loginScreen> {
         ),
       ),
     );
+  }
+   _dismissDialog() {
+    Navigator.pop(context);
+  }
+     void _showMaterialDialog(String Title, String Content) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(Title),
+            content: Text(Content),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    _dismissDialog();
+                  },
+                  child: Text('Close')),
+            ],
+          );
+        });
   }
 }

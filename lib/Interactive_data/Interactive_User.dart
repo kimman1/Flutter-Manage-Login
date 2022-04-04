@@ -16,7 +16,6 @@ class Interactive_User {
   }
 
   Future<String> getUserLogin(User user) async {
-    CircularProgressIndicator();
     String dataResponse = "";
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);

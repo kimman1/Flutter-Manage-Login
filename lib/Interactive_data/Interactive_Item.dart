@@ -26,19 +26,30 @@ class InteractiveItem {
   }
  
 
-  Future<String> createUser(User user) async {
-    String dataResponse = "";
-    var bodyvalue = user.toJSON();
+  Future<JsonReturnModel> editItem(Item item) async {
+    JsonReturnModel jsonResult = JsonReturnModel();
+
+    var bodyvalue = item.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await ItemAPI.createUser(user, bodydata);
+    final http.Response response = await ItemAPI.EditItem(item, bodydata);
+    if(response.statusCode == 200)
+    {
+      jsonResult.statusCode = response.statusCode.toString();
+      jsonResult.message = "OK";
+      return jsonResult;
+    }
+    else
+    {
     Iterable l = json.decode(response.body);
     List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
         l.map((model) => JsonReturnModel.fromJSON(model)));
-    for (JsonReturnModel i in listResponse)
-    {
-      dataResponse += i.message;
+        for(JsonReturnModel i in listResponse)
+        {
+          jsonResult = i;
+        }
+      return jsonResult;
     }
-    return dataResponse;
+    
   }
 }
 
@@ -54,14 +65,18 @@ class ItemAPI {
   static Future getItemByCategoryID(int CategoryID) {
     return http.get(Uri.parse(UrlAPI + 'Item/GetItemByCategoryID?CategoryID=' + CategoryID.toString()));
   }
-  static Future getuserByUserObject(User user, String bodydata) {
-    return http.post(Uri.parse(UrlAPI + 'User/GetUserByUser'),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: bodydata);
-  }
 
+  static Future EditItem(Item item, String bodydata)
+  {
+    return http.put(Uri.parse('https://localhost:44375/api/' + 'Item/PutItem'),
+    headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Access-Control_Allow_Origin": "*"
+        },
+        body: bodydata
+    );
+  }
   static Future createUser(User user, String bodydata) {
     return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
         headers: {
