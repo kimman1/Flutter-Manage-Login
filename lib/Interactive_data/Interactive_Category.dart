@@ -35,10 +35,11 @@ class InteractiveCategory {
   Future<JsonReturnModel> createCategory(Category cat) async {
     var bodyvalue = cat.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await CategoryAPI.createCategory(cat, bodydata);
-     Map<String, dynamic> jsonMap = jsonDecode(response.body);
-        JsonReturnModel jsonResult = JsonReturnModel.fromJSON(jsonMap);
-        return jsonResult;
+    final http.Response response =
+        await CategoryAPI.createCategory(cat, bodydata);
+    Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    JsonReturnModel jsonResult = JsonReturnModel.fromJSON(jsonMap);
+    return jsonResult;
   }
 }
 
@@ -65,7 +66,6 @@ class CategoryAPI {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "Access-Control_Allow_Origin": "*"
         },
         body: bodydata);
   }

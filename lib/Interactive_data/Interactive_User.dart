@@ -6,6 +6,7 @@ import 'package:manage/Model/JsonReturnModel.dart';
 import 'package:manage/Model/UserModel.dart';
 
 class Interactive_User {
+  JsonReturnModel jsonResult = JsonReturnModel();
   //List<User> listUser;
   Future<List<User>> getAllUser() async {
     final http.Response response = await UserAPI.getUser();
@@ -31,22 +32,14 @@ class Interactive_User {
   }
 
   Future<JsonReturnModel> createUser(User user) async {
-    //<JsonReturnModel> jsonList;
-    JsonReturnModel jsonResult = JsonReturnModel();
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await UserAPI.createUser(user, bodydata).timeout(const Duration(seconds: 10),onTimeout: ()
-    {
-      jsonResult.message = "Time out";
-      jsonResult.statusCode = "404";
-      return jsonResult;
-    });
-       Map<String, dynamic> jsonMap = jsonDecode(response.body);
-        jsonResult = JsonReturnModel.fromJSON(jsonMap);
-        return jsonResult;
-    }
+    final http.Response response = await UserAPI.createUser(user, bodydata);
+    Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    jsonResult = JsonReturnModel.fromJSON(jsonMap);
+    return jsonResult;
   }
-
+}
 
 class UserAPI {
   static String UrlAPI = 'http://kimman.somee.com/api/';
@@ -67,11 +60,10 @@ class UserAPI {
   }
 
   static Future createUser(User user, String bodydata) {
-    return http.post(Uri.parse(UrlAPI + 'User/CreateUser/'),
+    return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "Access-Control_Allow_Origin": "*"
         },
         body: bodydata);
   }

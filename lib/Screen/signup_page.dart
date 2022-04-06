@@ -1,3 +1,4 @@
+// @dart = 2.9
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/cupertino.dart';
@@ -11,9 +12,9 @@ import 'package:manage/Widget/bezierContainer.dart';
 import 'package:manage/Screen/loginScreen.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key, this.title}) : super(key: key);
+  const SignUpPage({Key key, this.title}) : super(key: key);
 
-  final String? title;
+  final String title;
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -22,6 +23,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   TextEditingController userNameController = TextEditingController();
   TextEditingController passWordController = TextEditingController();
+  Future<JsonReturnModel> resultReturnCreateUser;
   Navigate navi = Navigate();
   @override
   Widget build(BuildContext context) {
@@ -339,18 +341,17 @@ class _SignUpPageState extends State<SignUpPage> {
                                     userSendAPI.password =
                                         passWordController.text;
                                     Interactive_User inter = Interactive_User();
-                                      DialogCreate create = DialogCreate();
-                                      create.showMaterialDialog(context, "Notice","Please waiting....");
+                                    DialogCreate create = DialogCreate();
+
                                     JsonReturnModel result =
                                         await inter.createUser(userSendAPI);
-                                          if(result.statusCode == "200")
-                                          {
-                                            create.dismissDialog(context);
-                                            navi.PopnavigateToAnotherPage(context);
-                                            navi.PushnavigateToAnotherPage(context, loginScreen());
-                                          }
-                                            return (_showCupertinoDialog(result.statusCode, context, result.message));
-                                                                                                   
+                                    if (result.statusCode == "200") {
+                                      create.dismissDialog(context);
+                                      navi.PushnavigateToAnotherPage(
+                                          context, loginScreen());
+                                    }
+                                    return (create.showMaterialDialog(
+                                        context, "Notice", result.message));
                                   });
                                 },
                                 child: Text(
@@ -416,29 +417,5 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
-  }
-
-  _dismissDialog() {
-    Navigator.pop(context);
-  }
-
-  void _showCupertinoDialog(
-      String reponseCode, BuildContext contextSignUpPage, String returnMessege) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text('Reponses Code: ' + reponseCode),
-            content: Text(returnMessege),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    _dismissDialog();
-                    navi.PopnavigateToAnotherPage(contextSignUpPage);
-                  },
-                  child: Text('Close')),
-            ],
-          );
-        });
   }
 }
