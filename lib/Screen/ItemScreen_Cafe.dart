@@ -9,19 +9,24 @@ import 'package:manage/Interactive_data/Interactive_Item.dart';
 import 'package:manage/Model/CategoryModel.dart';
 import 'package:manage/Model/ItemModel.dart';
 import 'package:manage/Model/JsonReturnModel.dart';
+import 'package:manage/Screen/CafeManagerScreen.dart';
+import 'package:manage/Screen/SelectionScreen.dart';
+import 'package:manage/Ultils/DialogMaterial.dart';
 import 'package:manage/Ultils/Navigate.dart';
 
 class ItemScreen extends StatefulWidget
 {
   String CategoryID;
+  String categoryName;
   ItemScreenState createState() => ItemScreenState();  
   ItemScreen({Key key,
   @required this.CategoryID,
+  this.categoryName,
   }) : super(key: key);
 }
 class ItemScreenState extends State<ItemScreen>
 {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey =  GlobalKey<ScaffoldState>();
   Navigate navi = Navigate();
   InteractiveItem inter = InteractiveItem();
   InteractiveCategory interCategory = InteractiveCategory();
@@ -38,12 +43,13 @@ class ItemScreenState extends State<ItemScreen>
     });
     
   }
+  @override
   Widget build(BuildContext context)
   {
     return Scaffold
     (
       key: _scaffoldKey,
-      appBar: AppBar(title: Text('Item Screen'),),
+      appBar: AppBar(title: Text('Item Screen ' + widget.categoryName.toString()),),
       body: SafeArea
       (
         child: Column
@@ -65,51 +71,69 @@ class ItemScreenState extends State<ItemScreen>
                               itemCount: snapshot.data.length ,
                               itemBuilder: (context,index)
                               {
-                                return
-                                (
-                                    Column
-                                    (
-                                      children: 
-                                      [
-                                        GestureDetector
+                                if(snapshot.hasData)
+                                {
+                                        return
                                         (
-                                          child:  
-                                          Card
-                                          (
-                                            child: ListTile
+                                            Column
                                             (
-                                              title: Text
-                                              (snapshot.data[index].ItemName),
-                                              leading: Icon(Icons.add_comment),
-                                              subtitle: Row
-                                              (
-                                                children: 
-                                                [
-                                                  Text("Price: " + snapshot.data[index].UnitPrice),
-                                                  Icon(Icons.currency_yuan_sharp),
-                                                  
-                                                ],
-                                              )
-                                            ),
-                                            
-                                          ),
-                                          onLongPress: ()
-                                          {
-                                            setState(() 
-                                            {
-                                              _showCupertinoDialog(snapshot, index);
-                                            },
-                                        );})
-                                       
-                                      
-                                      ],
+                                              children: 
+                                              [
+                                                GestureDetector
+                                                (
+                                                  child:  
+                                                  Card
+                                                  (
+                                                    child: ListTile
+                                                    (
+                                                      title: Text
+                                                      (snapshot.data[index].ItemName),
+                                                      leading: Icon(Icons.add_comment),
+                                                      subtitle: Row
+                                                      (
+                                                        children: 
+                                                        [
+                                                          Text("Price: " + snapshot.data[index].UnitPrice),
+                                                          const Icon(Icons.currency_pound_outlined),
+                                                          
+                                                        ],
+                                                      )
+                                                    ),
+                                                    
+                                                  ),
+                                                  onLongPress: ()
+                                                  {
+                                                    setState
+                                                    (() 
+                                                    {
+                                                      _showCupertinoDialog(snapshot, index);
+                                                    },
+                                                    );
+                                                  }
+                                                )
+                                              ],
+                                            )
+                                        );
+                                  }
+                                else
+                                {
+                                 // DialogCreate createDialog = DialogCreate();
+                                  return
+                                  (
+                                    Container
+                                    (
+                                      child: Center
+                                      (
+                                        child: Text("error"),
+                                      ), 
                                     )
-                                );
+                                  );
+                                }
                               }
                             )
                           ));
                 }
-                return Center(child: Container(child: CircularProgressIndicator(),));
+                return (Center(child: AlertDialog(title: Text('Notice'),content: Text('Please wait when loading data\nif more than 10s please contact administrator.'),)));
               }
             )
             
@@ -138,16 +162,16 @@ class ItemScreenState extends State<ItemScreen>
           );
         });
   }
-  void _showCupertinoDialog(AsyncSnapshot<List<Item>> snapshot, var index) {
+  void _showCupertinoDialog (AsyncSnapshot<List<Item>> snapshot, var index) async {
      bool showProgress = false;
      
   TextEditingController ItemNameController = TextEditingController(text: snapshot.data[index].ItemName);
   TextEditingController CategoryIDController = TextEditingController(text: snapshot.data[index].CategoryID);
   TextEditingController UnitPriceController = TextEditingController(text: snapshot.data[index].UnitPrice);
-    showDialog(
+    showDialog  (
         context: context,
         builder: (context) {
-          return CupertinoAlertDialog(
+          return  CupertinoAlertDialog(
             title: const Text('Edit Item'),
             content: Card
             (
@@ -158,27 +182,34 @@ class ItemScreenState extends State<ItemScreen>
                   TextFormField
                   (
                     controller: ItemNameController,
-                    //initialValue: snapshot.data[index].ItemName ,
                     decoration: const InputDecoration
                     (
                       border: UnderlineInputBorder(),
                       labelText: 'Enter Item Name',
                     ),
                   ),
-                  FutureBuilder
-                  (
+                  FutureBuilder 
+                   (
                     future: listCategory,
                     builder: (BuildContext context, AsyncSnapshot<List<Category>> snapshot)
                     {
                       
-                      return DropdownButtonFormField<String>
+                      return
                       (
-                        value: selectedCat,
-                        //items: snapshot.data.map((Category) => 
-                       // DropdownMenuItem<String>(child: Text(Category.CategoryName),value: Category.CategoryName,)).toList(), 
-                        items: snapshot.data.map((Category map) 
+                        Row
+                        (
+                          children: 
+                          [
+                            Text('Cagetory:  '),
+                             Expanded
+                             (
+                               child: DropdownButtonFormField<String>
+                      (
+                         value: selectedCat,
+                         items: snapshot.data.map((Category map) 
                         {
-                          return new DropdownMenuItem<String>
+                          return
+                           DropdownMenuItem<String>
                           (
                             value: map.CategoryID,
                             child: Text(map.CategoryName)
@@ -188,7 +219,7 @@ class ItemScreenState extends State<ItemScreen>
                         {
                           setState(() {
                             selectedCat = newValue; 
-                            print(newValue);   
+                            selectedCat = selectedCat;
                           });
                        
                         },
@@ -196,34 +227,27 @@ class ItemScreenState extends State<ItemScreen>
                         {
                           setState(() {
                             selectedCat = newValue; 
-                            print(newValue);   
+                               
                           });
                        
                         },
-                      );
+                      )      
+                              )  
+                          ],
+                        )
+                      ); 
+                      
                     }
                   ),
                   TextFormField
                   (
-                    controller:  CategoryIDController,
-                    // initialValue: snapshot.data[index].CategoryID ,
-                    decoration: const InputDecoration
-                    (
-                      border: UnderlineInputBorder(),
-                      labelText: 'Enter Category',
-                    ),
-                  ),
-                  TextFormField
-                  (
                     controller:  UnitPriceController,
-                     //initialValue: snapshot.data[index].UnitPrice ,
                     decoration: const InputDecoration
                     (
                       border: UnderlineInputBorder(),
                       labelText: 'Enter Price',
                     ),
                   ),
-                  
                   Row
                   (
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -235,23 +259,28 @@ class ItemScreenState extends State<ItemScreen>
                         child: const Text('Submit'),
                         onPressed: () async 
                         {
+                          String oldIDCategory = snapshot.data[index].ItemID;
                           Item itemSendAPI = Item();
                           itemSendAPI.ItemID = snapshot.data[index].ItemID;
-                          itemSendAPI.CategoryID = CategoryIDController.text;
+                          itemSendAPI.CategoryID = selectedCat;
                           itemSendAPI.ItemName = ItemNameController.text;
                           itemSendAPI.UnitPrice = UnitPriceController.text;
                           setState(() {
+                            print((selectedCat));
                             _showMaterialDialog("Notice", "Please waiting....");
                           });
+                          //List<Item> listItemOldCategory = await inter.getItemByCategoryID(int.tryParse(oldIDCategory));
                           JsonReturnModel resp = await inter.editItem(itemSendAPI);
-                          if(resp.statusCode == "200")
+                           if(resp.statusCode == "200")
                           {
-                              setState(() {
+                              setState(()  {
                             showProgress = false;
                              _dismissDialog(); // dismiss dialog material
                              _dismissDialog(); // dismiss cupertino dialog
                              navi.PopnavigateToAnotherPage(context); // pop the screen
-                             navi.PushnavigateToAnotherPage(context, ItemScreen(CategoryID: snapshot.data[index].CategoryID));
+                             navi.PopnavigateToAnotherPage(context);
+                             navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
+                             
                           });
                           }
                           else
@@ -264,18 +293,17 @@ class ItemScreenState extends State<ItemScreen>
                           
                           }
                       ),
-                      SizedBox
+                       SizedBox
                       (
-                        width: 30,
+                        width: MediaQuery.of(context).size.width*0.05,
                       ),
                       ElevatedButton
                       (
                         onPressed:()
                         {
                           _dismissDialog();
-                          print("Cancel");
                         },
-                         child: Text("Cancel"),
+                         child: const Text("Cancel"),
                       ),
                     ],
                   )

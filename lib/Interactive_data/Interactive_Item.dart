@@ -31,7 +31,7 @@ class InteractiveItem {
 
     var bodyvalue = item.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await ItemAPI.EditItem(item, bodydata);
+    final http.Response response = await ItemAPI.EditItem(bodydata);
     if(response.statusCode == 200)
     {
       jsonResult.statusCode = response.statusCode.toString();
@@ -66,9 +66,9 @@ class ItemAPI {
     return http.get(Uri.parse(UrlAPI + 'Item/GetItemByCategoryID?CategoryID=' + CategoryID.toString()));
   }
 
-  static Future EditItem(Item item, String bodydata)
+  static Future EditItem( String bodydata)
   {
-    return http.put(Uri.parse('https://localhost:44375/api/' + 'Item/PutItem'),
+    return http.put(Uri.parse(UrlAPI + 'Item/PutItem'),
     headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

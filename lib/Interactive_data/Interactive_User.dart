@@ -30,21 +30,23 @@ class Interactive_User {
     return dataResponse;
   }
 
-  Future<String> createUser(User user) async {
-    String dataResponse = "";
+  Future<JsonReturnModel> createUser(User user) async {
+    //<JsonReturnModel> jsonList;
+    JsonReturnModel jsonResult = JsonReturnModel();
     var bodyvalue = user.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await UserAPI.createUser(user, bodydata);
-    Iterable l = json.decode(response.body);
-    List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
-        l.map((model) => JsonReturnModel.fromJSON(model)));
-    for (JsonReturnModel i in listResponse)
+    final http.Response response = await UserAPI.createUser(user, bodydata).timeout(const Duration(seconds: 10),onTimeout: ()
     {
-      dataResponse += i.message;
+      jsonResult.message = "Time out";
+      jsonResult.statusCode = "404";
+      return jsonResult;
+    });
+       Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        jsonResult = JsonReturnModel.fromJSON(jsonMap);
+        return jsonResult;
     }
-    return dataResponse;
   }
-}
+
 
 class UserAPI {
   static String UrlAPI = 'http://kimman.somee.com/api/';
@@ -65,7 +67,7 @@ class UserAPI {
   }
 
   static Future createUser(User user, String bodydata) {
-    return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
+    return http.post(Uri.parse(UrlAPI + 'User/CreateUser/'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

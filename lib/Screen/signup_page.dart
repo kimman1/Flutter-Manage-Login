@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/Interactive_User.dart';
 import 'package:manage/Model/JsonReturnModel.dart';
 import 'package:manage/Model/UserModel.dart';
+import 'package:manage/Ultils/DialogMaterial.dart';
 import 'package:manage/Ultils/Navigate.dart';
 import 'package:manage/Widget/bezierContainer.dart';
 import 'package:manage/Screen/loginScreen.dart';
@@ -338,11 +339,18 @@ class _SignUpPageState extends State<SignUpPage> {
                                     userSendAPI.password =
                                         passWordController.text;
                                     Interactive_User inter = Interactive_User();
-                                    String result =
+                                      DialogCreate create = DialogCreate();
+                                      create.showMaterialDialog(context, "Notice","Please waiting....");
+                                    JsonReturnModel result =
                                         await inter.createUser(userSendAPI);
-
-                                    return (_showCupertinoDialog(
-                                        result, context));
+                                          if(result.statusCode == "200")
+                                          {
+                                            create.dismissDialog(context);
+                                            navi.PopnavigateToAnotherPage(context);
+                                            navi.PushnavigateToAnotherPage(context, loginScreen());
+                                          }
+                                            return (_showCupertinoDialog(result.statusCode, context, result.message));
+                                                                                                   
                                   });
                                 },
                                 child: Text(
@@ -415,19 +423,13 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _showCupertinoDialog(
-      String reponseCode, BuildContext contextSignUpPage) {
+      String reponseCode, BuildContext contextSignUpPage, String returnMessege) {
     showDialog(
         context: context,
         builder: (context) {
-          String status = "";
-          if (reponseCode == "200") {
-            status = 'Create User Success';
-          } else if (reponseCode == "404") {
-            status = 'Create User Fail';
-          }
           return CupertinoAlertDialog(
             title: Text('Reponses Code: ' + reponseCode),
-            content: Text(status),
+            content: Text(returnMessege),
             actions: <Widget>[
               TextButton(
                   onPressed: () {

@@ -1,12 +1,14 @@
 //@dart=2.9
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
 import 'package:manage/Screen/CafeManagerScreen.dart';
 import 'package:manage/Screen/SelectionScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Screen/signup_page.dart';
+import 'package:manage/Ultils/DialogMaterial.dart';
 import 'package:manage/Ultils/Navigate.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import '../Widget/bezierContainer.dart';
@@ -18,6 +20,18 @@ class loginScreen extends StatefulWidget {
 }
 
 class loginScreenState extends State<loginScreen> {
+   bool _validate = false;
+    String validUserName (String value)
+      {
+        if(value != null)
+        {
+          return null;
+        }        
+        else
+        {
+          return "Please Input User Name!";
+        }
+      }
   String dropdownValue = 'Cafe Manager';
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -41,6 +55,9 @@ class loginScreenState extends State<loginScreen> {
   }
 
   Widget build(BuildContext context) {
+    var focusNodeEmail = FocusNode();
+    var focusNodePassword = FocusNode();
+    var focusNodeLoginButton = FocusNode();
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
@@ -119,6 +136,16 @@ class loginScreenState extends State<loginScreen> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  autofocus: true,
+                                  focusNode: focusNodeEmail,
+                                  
+                                  onEditingComplete: () => 
+                                  {
+                                    
+                                    FocusScope.of(context).requestFocus(focusNodePassword)
+                                  },
+                                  textInputAction: TextInputAction.next,
+                                  //focusNode: myFocusNode,
                                   controller: usernameController,
                                   style: TextStyle(
                                     fontSize: 20,
@@ -126,7 +153,8 @@ class loginScreenState extends State<loginScreen> {
                                   textAlign: TextAlign.start,
                                   obscureText: false,
                                   decoration: InputDecoration(
-                                    hintText: "email",
+                                    errorText: validUserName(usernameController.text),
+                                    hintText: "Input you Email",
                                     suffixIcon: Icon(
                                       Icons.email,
                                       color: Colors.black54,
@@ -164,10 +192,16 @@ class loginScreenState extends State<loginScreen> {
                                   height: 10,
                                 ),
                                 TextField(
+                                  onEditingComplete: () =>
+                                  {
+                                    //focusNodeEmail.unfocus(),
+                                    FocusScope.of(context).requestFocus(focusNodeLoginButton),
+                                  }, 
+                                  focusNode: focusNodePassword,
                                   controller: passwordController,
                                   obscureText: true,
                                   decoration: InputDecoration(
-                                    hintText: "password",
+                                    hintText: "Input Your Password",
                                     suffixIcon: Icon(
                                       Icons.visibility,
                                       color: Colors.black54,
@@ -249,7 +283,10 @@ class loginScreenState extends State<loginScreen> {
                         child: Center(
                           child: Container(
                             width: MediaQuery.of(context).size.width,
-                            child: InkWell(
+                            child: 
+                            InkWell(
+                              focusNode: focusNodeLoginButton,
+                              //autofocus: true,
                                 onTap: () async {
                                   User userSendAPI = User();
                                   userSendAPI.username =
@@ -266,7 +303,7 @@ class loginScreenState extends State<loginScreen> {
                                     if (responseCode1 == "success" ) {
                                       if(userSendAPI.username == "admin")
                                       {
-                                        //navi.PopnavigateToAnotherPage(context);
+                                        
                                         navi.PushnavigateToAnotherPage(context, SelectionScreen(tilte: userSendAPI.username,googleSignIn: googleSignIn, supportGoogle: _supportSignInGoogle, userFromDB: userSendAPI,));
                                           }
                                         else 
@@ -282,9 +319,10 @@ class loginScreenState extends State<loginScreen> {
                                           }
                                         }
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text('Login Failed')));
+                                     
+                                      DialogCreate createDialog =  DialogCreate();
+                                      createDialog.showMaterialDialog(context, "Notice","Login Failed");
+
                                     }
                                     
                                   });
@@ -565,6 +603,7 @@ class loginScreenState extends State<loginScreen> {
       ),
     );
   }
+  
    _dismissDialog() {
     Navigator.pop(context);
   }
@@ -584,5 +623,6 @@ class loginScreenState extends State<loginScreen> {
             ],
           );
         });
+     
   }
 }

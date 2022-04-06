@@ -32,19 +32,13 @@ class InteractiveCategory {
     return dataResponse;
   }
 
-  Future<String> createUser(User user) async {
-    String dataResponse = "";
-    var bodyvalue = user.toJSON();
+  Future<JsonReturnModel> createCategory(Category cat) async {
+    var bodyvalue = cat.toJSON();
     var bodydata = json.encode(bodyvalue);
-    final http.Response response = await CategoryAPI.createUser(user, bodydata);
-    Iterable l = json.decode(response.body);
-    List<JsonReturnModel> listResponse = List<JsonReturnModel>.from(
-        l.map((model) => JsonReturnModel.fromJSON(model)));
-    for (JsonReturnModel i in listResponse)
-    {
-      dataResponse += i.message;
-    }
-    return dataResponse;
+    final http.Response response = await CategoryAPI.createCategory(cat, bodydata);
+     Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        JsonReturnModel jsonResult = JsonReturnModel.fromJSON(jsonMap);
+        return jsonResult;
   }
 }
 
@@ -66,8 +60,8 @@ class CategoryAPI {
         body: bodydata);
   }
 
-  static Future createUser(User user, String bodydata) {
-    return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
+  static Future createCategory(Category cat, String bodydata) {
+    return http.post(Uri.parse(UrlAPI + 'Category/CreateCategory'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
