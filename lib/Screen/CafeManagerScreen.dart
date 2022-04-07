@@ -1,6 +1,4 @@
 // @dart=2.9
-import 'dart:html';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
@@ -121,24 +119,30 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
                                             leading: iconForListTitle,
                                           ),
                                         ),
-                                        onLongPress: () {
-                                          setState(() {
-                                            String indexSelect =
-                                                index.toString();
-                                            selectedIndex = indexSelect;
-                                            if (!listTest.contains(snapshot
-                                                .data[index].CategoryID)) {
-                                              listTest.add(snapshot
-                                                  .data[index].CategoryID);
-                                            }
-                                          });
-                                        },
-                                        onDoubleTap: () {
-                                          setState(() {
-                                            listTest.remove(snapshot
+                                        onHorizontalDragUpdate: (details) 
+                                        {  
+
+                                            // Note: Sensitivity is integer used when you don't want to mess up vertical drag
+                                            int sensitivity = 20;
+                                            if (details.delta.dx > sensitivity) {
+                                                setState(() {
+                                                 listTest.remove(snapshot
                                                 .data[index].CategoryID);
-                                          });
+                                                  print('right swipe');
+                                                });
+                                                // Right Swipe
+                                            } else if(details.delta.dx < -sensitivity){
+                                                //Left Swipe
+                                                setState(() {
+                                                  if (!listTest.contains(snapshot.data[index].CategoryID)) 
+                                                {
+                                                  listTest.add(snapshot.data[index].CategoryID);
+                                                }
+                                                  print('left swipe');
+                                                });
+                                            }
                                         },
+                                       
                                         onTap: () {
                                           setState(() {
                                             if (listTest.isNotEmpty) {
@@ -157,18 +161,23 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
                                                 ));
                                           });
                                         },
+                                        onLongPress: ()
+                                        {
+                                          
+                                          _showMaterialDialogEditCategory('Editing Category','Please input all the field',snapshot.data[index]);
+                                        },
                                       )
                                     ],
                                   )
                                 : Container());
                           }));
                     } else {
-                      return Center(
+                      return const Center(
                           child: CircularProgressIndicator(
                               backgroundColor: Colors.blue));
                     }
                   }
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }),
@@ -195,16 +204,132 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
             labelStyle:
                 TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
             labelBackgroundColor: Colors.black,
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.remove, color: Colors.white),
+            backgroundColor: Colors.red,
+            onTap: () {
+              DialogCreate create = DialogCreate();
+              create.showMaterialDialogWithDeleteTemplate(context, listTest);
+            },
+            label: 'Delete Selected Category',
+            labelStyle:
+                TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+            labelBackgroundColor: Colors.black,
           )
         ],
       ),
+      
     ));
   }
 
   _dismissDialog() {
     Navigator.pop(context);
   }
-
+  void _showMaterialDialogEditCategory(String Title, String Content, Category cat) {
+    TextEditingController CategoryNameController = TextEditingController(text: cat.CategoryName);
+    TextEditingController DescriptionController = TextEditingController(text: cat.Description);
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(Title),
+            content: Text(Content),
+              actions: 
+              [
+                  Column
+                  (
+                    children: 
+                    [
+                      TextFormField
+                     (
+                       controller: CategoryNameController,
+                              decoration: const InputDecoration
+                            (
+                              border: UnderlineInputBorder(),
+                              labelText: 'Enter Category Name',
+                            ),
+                      ),
+                      TextFormField
+                     (
+                       controller: DescriptionController,
+                              decoration: const InputDecoration
+                            (
+                              border: UnderlineInputBorder(),
+                              labelText: 'Enter Category Description',
+                            ),
+                      ),
+                       Row
+                      (
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: 
+                        [
+                          ElevatedButton
+                          (
+                            onPressed: ()
+                            async {
+                              Navigate navi = Navigate();
+                              InteractiveCategory inter = InteractiveCategory();
+                              DialogCreate create = DialogCreate();
+                              create.showMaterialDialog(context, "Notice", "Please waiting...");
+                              Category catSendAPI = Category();
+                              catSendAPI.CategoryID = cat.CategoryID;
+                              if(CategoryNameController.text != null)
+                              {
+                              catSendAPI.CategoryName = CategoryNameController.text;
+                              }
+                              else
+                              {
+                                catSendAPI.CategoryName = cat.CategoryName;
+                              }
+                              if(DescriptionController.text != null)
+                              {
+                                catSendAPI.Description = DescriptionController.text; 
+                              }
+                              else
+                              {
+                                catSendAPI.Description = cat.Description;
+                              }
+                              
+                              JsonReturnModel jsonReturn = await inter.editCategory(catSendAPI);
+                              if(jsonReturn.statusCode == "200")
+                              {
+                                create.dismissDialog(context);
+                                create.showMaterialDialog(context, "Notice", jsonReturn.message);
+                                navi.PopnavigateToAnotherPage(context);
+                                navi.PopnavigateToAnotherPage(context);
+                                navi.PopnavigateToAnotherPage(context);
+                                navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
+                              }
+                              else
+                              {
+                                create.dismissDialog(context);
+                                create.showMaterialDialog(context, "Notice", jsonReturn.message);
+                              }
+                            }, 
+                            child: const Text('Submit')
+                          ),
+                          SizedBox
+                          (
+                            width: MediaQuery.of(context).size.width * 0.02,
+                          ),
+                          ElevatedButton
+                          (
+                            onPressed: ()
+                            {
+                              _dismissDialog();
+                            }, 
+                            child: const Text('Cancel')
+                          )
+                        ],
+                      )
+                      ],
+                  ) ,
+                ],
+          );
+        });
+  }
   void _showCupertinoDialogAddCategory() async {
     bool showProgress = false;
 
@@ -281,5 +406,6 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
             ),
           );
         });
+        
   }
 }

@@ -12,4 +12,8 @@ class Navigate {
   void popUntil(BuildContext context) {
     Navigator.popUntil(context, (route) => route.isFirst);
   }
+  void popUntilWithName(BuildContext context, String ScreenName) {
+    Navigator.popUntil(context, ModalRoute.withName('/$ScreenName'));
+  }
+  
 }

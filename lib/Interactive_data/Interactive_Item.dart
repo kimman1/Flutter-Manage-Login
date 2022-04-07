@@ -1,5 +1,7 @@
 // @dart=2.9
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:manage/Model/CategoryModel.dart';
@@ -45,7 +47,58 @@ class InteractiveItem {
       return jsonResult;
     }
   }
-}
+  Future<JsonReturnModel> createItem(Item item) async {
+    try
+    {
+         var bodyvalue = item.toJSON();
+        var bodydata = json.encode(bodyvalue);
+        final http.Response response =
+            await ItemAPI.createItem(bodydata);
+        Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        JsonReturnModel jsonResult = JsonReturnModel.fromJSON(jsonMap);
+        return jsonResult;
+    }
+    catch (e)
+    {
+      JsonReturnModel jsonResult = JsonReturnModel();
+      
+          if(e is SocketException)
+          {
+            
+            jsonResult.statusCode = "500";
+            jsonResult.message = "Socket exception error";
+           
+            //print('socket exception');
+          }
+          else if(e is TimeoutException)
+          {
+             
+            jsonResult.statusCode = "408";
+            jsonResult.message = "Time Out";
+            
+            //print("time out");
+          }
+          else if(e is HttpException)
+          {
+             
+            jsonResult.statusCode = "ERR_CODE";
+            jsonResult.message = "Http Exception";
+           
+          }
+          else
+          {
+            
+            jsonResult.statusCode = "Unknow";
+            jsonResult.message = "Unknow";
+            
+          
+            //print('unknow' + e.toString());
+          }
+          return jsonResult;
+        }
+    }
+  }
+
 
 class ItemAPI {
   static String UrlAPI = 'http://kimman.somee.com/api/';
@@ -72,8 +125,8 @@ class ItemAPI {
         body: bodydata);
   }
 
-  static Future createUser(User user, String bodydata) {
-    return http.post(Uri.parse(UrlAPI + 'User/CreateUser'),
+  static Future createItem(String bodydata) {
+    return http.post(Uri.parse(UrlAPI + 'Item/CreateItem'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

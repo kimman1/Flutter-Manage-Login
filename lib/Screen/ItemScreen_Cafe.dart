@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:manage/Interactive_data/Interactive_Category.dart';
 import 'package:manage/Interactive_data/Interactive_Item.dart';
 import 'package:manage/Model/CategoryModel.dart';
@@ -140,10 +141,125 @@ class ItemScreenState extends State<ItemScreen>
           ],
         )
       ),
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: Colors.redAccent,
+        overlayColor: Colors.grey,
+        overlayOpacity: 0.5,
+        spacing: 15,
+        spaceBetweenChildren: 15,
+        closeManually: false,
+        visible: true,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add, color: Colors.white),
+            backgroundColor: Colors.green,
+            onTap: () {
+              _showMaterialDialogAddItem();
+            },
+            label: 'Add new Item',
+            labelStyle:
+                TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+            labelBackgroundColor: Colors.black,
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.remove, color: Colors.white),
+            backgroundColor: Colors.red,
+            onTap: () {
+              
+            },
+            label: 'Delete Selected Item',
+            labelStyle:
+                TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+            labelBackgroundColor: Colors.black,
+          )
+        ],
+      ),
+      
     );
   }
    _dismissDialog() {
     Navigator.pop(context);
+  }
+  void _showMaterialDialogAddItem() {
+    TextEditingController ItemNameController = TextEditingController();
+    TextEditingController UnitPriceController = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Add Item'),
+            content: Text('Please input data'),
+            actions: <Widget>[
+                Column
+                (
+                  children: 
+                  [
+                    TextFormField
+                    (
+                      controller: ItemNameController,
+                        decoration: const InputDecoration
+                            (
+                              border: UnderlineInputBorder(),
+                              labelText: 'Enter Item Name',
+                            ),
+                    ),
+                    TextFormField
+                    (
+                      controller: UnitPriceController,
+                        decoration: const InputDecoration
+                            (
+                              border: UnderlineInputBorder(),
+                              labelText: 'Enter Unit Price',
+                            ),
+                    ),
+                    Row
+                    (
+                      children: 
+                      [
+                        ElevatedButton
+                        (
+                          onPressed: () async
+                          {
+                            Item itemSendAPI = Item();
+                            InteractiveItem inter = InteractiveItem();
+                            DialogCreate create = DialogCreate();
+                            if(ItemNameController.text != null)
+                            {
+                              itemSendAPI.ItemName = ItemNameController.text;
+                            }
+                            if(UnitPriceController.text != null)
+                            {
+                              itemSendAPI.UnitPrice = UnitPriceController.text;
+                            }
+                            itemSendAPI.CategoryID = widget.CategoryID;
+                            JsonReturnModel jsonResult = await inter.createItem(itemSendAPI);
+                            if(jsonResult.statusCode == "200")
+                            {
+                              create.showMaterialDialogWithWidget(context, "Notice", jsonResult.message, ItemScreen(CategoryID: widget.CategoryID));
+                            }
+                          }, 
+                          child: Text('Submit')
+                        ),
+                        SizedBox
+                        (
+                          width: MediaQuery.of(context).size.width * 0.15,
+                        ),
+                        ElevatedButton
+                        (
+                          onPressed: ()
+                          {
+                            _dismissDialog();
+                          }, 
+                          child: Text('Cancel')
+                        )
+                      ],
+                    )
+                  ],
+                )
+            ],
+          );
+        });
   }
      void _showMaterialDialog(String Title, String Content) {
     showDialog(

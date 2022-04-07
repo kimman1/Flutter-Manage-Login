@@ -1,5 +1,6 @@
 // @dart=2.9
 import 'package:flutter/material.dart';
+import 'package:manage/Screen/CafeManagerScreen.dart';
 import 'package:manage/Screen/loginScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
       home: loginScreen(),
     );
