@@ -7,6 +7,7 @@ import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Screen/CafeManagerScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Ultils/Navigate.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class SelectionScreen extends StatefulWidget
 {
@@ -62,45 +63,37 @@ class SelectionScreenState extends State<SelectionScreen>
                         itemBuilder:  ( context, index) 
                       {
                           return (
-                            Card
+                            
+                               Card
                             (
-                              child:ListTile(
-                                title:  Text(listSelection[index],),
-                                leading: Icon(Icons.currency_bitcoin),
-                                onTap: ()
+                              child:
+                              SwipeTo
+                              (
+                                onRightSwipe: ()
                                 {
-                                  
-                                  setState(() 
-                                  {
-                                      print(listSelection[index]);
-                                      String result = listSelection[index].toString();
-                                      
+                                     String result = listSelection[index].toString();
                                       if(result == "User Manager")
                                       {
-                                        
                                         navi.PushnavigateToAnotherPage(context, mainScreen(title: widget.tilte,googleSignIn: widget.googleSignIn, supportGoogle: widget.supportGoogle,userFromDB: widget.userFromDB,));
-                                        //navi.PushnavigateToAnotherPage(context, mainScreen());
                                       }
                                       else if(result == "Cafe Manager")
                                       {
                                         navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
-                                        
-                                        
-                                        
-                                        
                                       }
                                       else if(result == "Schedule Manager")
                                       {
-                                        //widgetWillBePush = Container();
+                                        print('not done yet');
+                                        
                                       }
-                                      //navi.PopnavigateToAnotherPage(context);
-                                        //navi.PushnavigateToAnotherPage(context, widgetWillBePush);
-                                  });    
                                 },
-                              
+                                child: ListTile(
+                                title:  Text(listSelection[index],),
+                                leading: Icon(Icons.currency_bitcoin),
                             ),
                               )
-                          );
+                              
+                              )
+                        );
                       }
                     )
                 ),

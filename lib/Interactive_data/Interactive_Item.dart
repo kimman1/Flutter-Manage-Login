@@ -11,6 +11,12 @@ import 'package:manage/Model/UserModel.dart';
 
 class InteractiveItem {
   //List<User> listUser;
+  Future<Item> getItemByItemID(String id) async {
+    final http.Response response = await ItemAPI.getItemByID(id);
+    Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        Item jsonResult = Item.fromJSON(jsonMap);
+    return jsonResult;
+  }
   Future<List<Item>> getAllItem() async {
     final http.Response response = await ItemAPI.getItem();
     Iterable l = json.decode(response.body);
@@ -97,6 +103,56 @@ class InteractiveItem {
           return jsonResult;
         }
     }
+    Future<List<JsonReturnModel>> deleteItem(List<String> ListItemID) async {
+    List<JsonReturnModel> listJsonReturn = [];
+    try
+    {
+      for(String i in ListItemID)
+      {
+        final http.Response response =
+            await ItemAPI.deleteItem(i);
+        Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        JsonReturnModel jsonResult = JsonReturnModel.fromJSON(jsonMap);
+        listJsonReturn.add(jsonResult);
+      }
+    }
+    catch (e)
+    {
+          if(e is SocketException)
+          {
+            JsonReturnModel jsonResult = JsonReturnModel();
+            jsonResult.statusCode = "500";
+            jsonResult.message = "Socket exception error";
+            listJsonReturn.add(jsonResult);
+            //print('socket exception');
+          }
+          else if(e is TimeoutException)
+          {
+              JsonReturnModel jsonResult = JsonReturnModel();
+            jsonResult.statusCode = "408";
+            jsonResult.message = "Time Out";
+            listJsonReturn.add(jsonResult);
+            //print("time out");
+          }
+          else if(e is HttpException)
+          {
+             JsonReturnModel jsonResult = JsonReturnModel();
+            jsonResult.statusCode = "ERR_CODE";
+            jsonResult.message = "Http Exception";
+            listJsonReturn.add(jsonResult);
+          }
+          else
+          {
+            JsonReturnModel jsonResult = JsonReturnModel();
+            jsonResult.statusCode = "Unknow";
+            jsonResult.message = "Unknow";
+            listJsonReturn.add(jsonResult);
+          
+            //print('unknow' + e.toString());
+          }
+        }
+        return listJsonReturn;
+    }
   }
 
 
@@ -106,8 +162,8 @@ class ItemAPI {
     return http.get(Uri.parse(UrlAPI + 'Item/GetItem'));
   }
 
-  static Future getItemByID(int id) {
-    return http.get(Uri.parse(UrlAPI + 'Item/GetItemByID/' + id.toString()));
+  static Future getItemByID(String id) {
+    return http.get(Uri.parse(UrlAPI + 'Item/GetItemByID/$id'));
   }
 
   static Future getItemByCategoryID(int CategoryID) {
@@ -132,5 +188,13 @@ class ItemAPI {
           "Accept": "application/json",
         },
         body: bodydata);
+  }
+  static Future deleteItem( String ItemID) {
+    return http.delete(Uri.parse(UrlAPI + 'Item/DeleteItem/$ItemID'),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+       );
   }
 }

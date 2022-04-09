@@ -2,9 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:manage/Interactive_data/Interactive_Category.dart';
+import 'package:manage/Interactive_data/Interactive_Item.dart';
 import 'package:manage/Model/CategoryModel.dart';
+import 'package:manage/Model/ItemModel.dart';
 import 'package:manage/Model/JsonReturnModel.dart';
 import 'package:manage/Screen/CafeManagerScreen.dart';
+import 'package:manage/Screen/ItemScreen_Cafe.dart';
 import 'package:manage/Ultils/Navigate.dart';
 
 class DialogCreate{
@@ -55,7 +58,7 @@ void showMaterialDialogWithWidget(BuildContext context, String Title, String Con
           );
         });
   }
-  void showMaterialDialogWithDeleteTemplate(BuildContext context, List<String> listID) {
+  void showMaterialDialogWithDeleteTemplate(BuildContext context, List<String> listID, String TypeDelete) {
     showDialog(
         context: context,
         builder: (context) {
@@ -67,10 +70,26 @@ void showMaterialDialogWithWidget(BuildContext context, String Title, String Con
               (
                 onPressed: () async
                 {
-                  InteractiveCategory inter = InteractiveCategory();
+                   List<JsonReturnModel> listJsonReturn = [];
+                   String catID = "";
+                   String catName = "";
+                  InteractiveCategory interCat = InteractiveCategory();
+                  InteractiveItem interItem = InteractiveItem();
                   showMaterialDialog(context, "On Process", "Please waiting... \nDon't press close if more than 10s");
                   
-                      List<JsonReturnModel> listJsonReturn = await inter.deleteCategory(listID);
+                    if(TypeDelete == "Category")
+                    {
+                        listJsonReturn = await interCat.deleteCategory(listID);
+                    }
+                    else if(TypeDelete == "Item")
+                    {
+                      
+                        Item itemTemp = await interItem.getItemByItemID(listID[0]);
+                        catID = itemTemp.CategoryID;
+                        Category catTemp = await interCat.getCategoryByID(catID);
+                        catName = catTemp.CategoryName;
+                       listJsonReturn = await interItem.deleteItem(listID);
+                    } 
                       dismissDialog(context);
                       if(listJsonReturn.isNotEmpty)
                       {
@@ -79,7 +98,14 @@ void showMaterialDialogWithWidget(BuildContext context, String Title, String Con
                         {
                             contentDialog += "Status Code: "  + i.statusCode + '\n' + "Result: " +  i.message + '\n';
                         }
-                        showMaterialDialogWithWidget(context, "Notice", contentDialog, CafeManagerScreen() );
+                        if(TypeDelete == "Category")
+                        {
+                          showMaterialDialogWithWidget(context, "Notice", contentDialog, CafeManagerScreen());
+                        }
+                        else if(TypeDelete == "Item")
+                        {
+                           showMaterialDialogWithWidget(context, "Notice", contentDialog, ItemScreen(CategoryID: catID ,categoryName: catName,));
+                        }
                       }
                       else
                       {

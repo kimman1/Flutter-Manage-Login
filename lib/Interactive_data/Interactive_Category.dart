@@ -2,11 +2,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:manage/Model/CategoryModel.dart';
 import 'package:manage/Model/JsonReturnModel.dart';
-import 'package:manage/Model/UserModel.dart';
 
 class InteractiveCategory {
   //List<User> listUser;
@@ -16,6 +14,12 @@ class InteractiveCategory {
     List<Category> listCategory =
         List<Category>.from(l.map((model) => Category.fromJSON(model)));
     return listCategory;
+  }
+   Future<Category> getCategoryByID(String id) async {
+    final http.Response response = await CategoryAPI.getCategoryById(id);
+     Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        Category jsonResult = Category.fromJSON(jsonMap);
+    return jsonResult;
   }
 
   Future<JsonReturnModel> createCategory(Category cat) async {
@@ -140,8 +144,8 @@ class CategoryAPI {
     return http.get(Uri.parse(UrlAPI + 'Category/GetCategory'));
   }
 
-  static Future getUserById(int id) {
-    return http.get(Uri.parse(UrlAPI + 'User/GetUser/' + id.toString()));
+  static Future getCategoryById(String id) {
+    return http.get(Uri.parse(UrlAPI + 'Category/GetCategoryByID/$id'));
   }
 
   static Future createCategory(Category cat, String bodydata) {

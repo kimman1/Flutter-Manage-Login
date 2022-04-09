@@ -1,4 +1,6 @@
 // @dart=2.9
+// ignore_for_file: prefer_const_constructors, unnecessary_new
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
@@ -23,7 +25,6 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
   Icon iconForListTitle;
   Future<List<Category>> listCategory;
   List<Category> listRefreshSearchBar;
-  Future<JsonReturnModel> _addCategoryRetun;
   SearchBar searchBar;
   String searchString = "";
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -40,6 +41,7 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
   }
 
   CafeManagerScreenState() {
+    // ignore: unnecessary_new
     searchBar = new SearchBar(
         inBar: false,
         setState: setState,
@@ -123,7 +125,7 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
                                         {  
 
                                             // Note: Sensitivity is integer used when you don't want to mess up vertical drag
-                                            int sensitivity = 20;
+                                            int sensitivity = 7;
                                             if (details.delta.dx > sensitivity) {
                                                 setState(() {
                                                  listTest.remove(snapshot
@@ -210,7 +212,7 @@ class CafeManagerScreenState extends State<CafeManagerScreen> {
             backgroundColor: Colors.red,
             onTap: () {
               DialogCreate create = DialogCreate();
-              create.showMaterialDialogWithDeleteTemplate(context, listTest);
+              create.showMaterialDialogWithDeleteTemplate(context, listTest, "Category");
             },
             label: 'Delete Selected Category',
             labelStyle:

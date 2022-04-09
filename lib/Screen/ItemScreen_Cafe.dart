@@ -1,6 +1,5 @@
 // @dart=2.9
-
-import 'dart:convert';
+// ignore_for_file:  prefer_const_constructors
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:manage/Model/CategoryModel.dart';
 import 'package:manage/Model/ItemModel.dart';
 import 'package:manage/Model/JsonReturnModel.dart';
 import 'package:manage/Screen/CafeManagerScreen.dart';
-import 'package:manage/Screen/SelectionScreen.dart';
 import 'package:manage/Ultils/DialogMaterial.dart';
 import 'package:manage/Ultils/Navigate.dart';
 
@@ -27,12 +25,15 @@ class ItemScreen extends StatefulWidget
 }
 class ItemScreenState extends State<ItemScreen>
 {
+  int onLongPressCount = 0;
+  var selectMode = false;
   final GlobalKey<ScaffoldState> _scaffoldKey =  GlobalKey<ScaffoldState>();
   Navigate navi = Navigate();
   InteractiveItem inter = InteractiveItem();
   InteractiveCategory interCategory = InteractiveCategory();
   Future<List<Item>> listItem;
   Future<List<Category>> listCategory;
+  List<String> listItemSelected = [];
   String selectedCat = "1";
   @override
   void initState() {
@@ -85,8 +86,15 @@ class ItemScreenState extends State<ItemScreen>
                                                   child:  
                                                   Card
                                                   (
+                                                    shadowColor: Colors.deepPurple,
+                                                    elevation: 5.0,
+                                                    shape: RoundedRectangleBorder
+                                                    (
+                                                      borderRadius: BorderRadius.circular(15.0),),
+                                                    color: listItemSelected.contains(snapshot.data[index].ItemID) ? Colors.orangeAccent : null ,
                                                     child: ListTile
                                                     (
+                                                        
                                                       title: Text
                                                       (snapshot.data[index].ItemName),
                                                       leading: Icon(Icons.add_comment),
@@ -104,13 +112,69 @@ class ItemScreenState extends State<ItemScreen>
                                                   ),
                                                   onLongPress: ()
                                                   {
-                                                    setState
-                                                    (() 
+                                                    
+                                                    if (!selectMode) {
+                                                      debugPrint('selectMode START');
+                                                      selectMode = true;
+                                                      setState(() {
+                                                        _scaffoldKey.currentState.showSnackBar(const SnackBar(content: Text('You have selected multi Item'),duration: Duration(milliseconds: 500,)));
+                                                        listItemSelected.add(snapshot.data[index].ItemID);
+                                                      });
+                                                      
+                                                    }
+                                                    
+                                                    // setState
+                                                    // (() 
+                                                    // {
+                                                    //   _showCupertinoDialog(snapshot, index);
+                                                    // },
+                                                    // );
+                                                    
+                                                  },
+                                                  onTap: ()
+                                                  {
+                                                    if(selectMode)
                                                     {
-                                                      _showCupertinoDialog(snapshot, index);
-                                                    },
-                                                    );
-                                                  }
+                                                          if (listItemSelected.contains(snapshot.data[index].ItemID)) 
+                                                          {
+                                                                  if(listItemSelected.length == 1)
+                                                                  {
+                                                                      setState(() {
+                                                                        
+                                                                        listItemSelected.remove(snapshot.data[index].ItemID);
+                                                                        selectMode = false;
+                                                                         _scaffoldKey.currentState.showSnackBar(const SnackBar(content: Text('Multi Item selected has been disposed')));  
+                                                                        print(listItemSelected.length);
+                                                                      });
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    setState(() {
+                                                                        
+                                                                        listItemSelected.remove(snapshot.data[index].ItemID);
+                                                                        print(listItemSelected.length);
+                                                                      });
+                                                              }
+                                                          }
+                                                          else
+                                                          {
+                                                              setState(() {
+                                                                
+                                                                listItemSelected.add(snapshot.data[index].ItemID);
+                                                                print(listItemSelected.length);
+                                                              });
+                                                          }
+
+                                                    }
+                                                        else {
+                                                        // Stop multi-select mode when there's no more selected List item
+                                                        debugPrint('selectMode STOP on tap');
+                                                        setState(() {
+                                                           _showCupertinoDialog(snapshot, index); 
+                                                        });
+                                                        //selectMode = false;
+                                                      }
+                                                  },
                                                 )
                                               ],
                                             )
@@ -121,9 +185,9 @@ class ItemScreenState extends State<ItemScreen>
                                  // DialogCreate createDialog = DialogCreate();
                                   return
                                   (
-                                    Container
+                                     Container
                                     (
-                                      child: Center
+                                       child: Center
                                       (
                                         child: Text("error"),
                                       ), 
@@ -165,8 +229,9 @@ class ItemScreenState extends State<ItemScreen>
           SpeedDialChild(
             child: Icon(Icons.remove, color: Colors.white),
             backgroundColor: Colors.red,
-            onTap: () {
-              
+            onTap: () async{
+              DialogCreate create = DialogCreate();
+              create.showMaterialDialogWithDeleteTemplate(context, listItemSelected,"Item");
             },
             label: 'Delete Selected Item',
             labelStyle:

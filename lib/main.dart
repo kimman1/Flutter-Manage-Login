@@ -1,6 +1,9 @@
 // @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:manage/Screen/CafeManagerScreen.dart';
+import 'package:manage/Screen/ItemScreen_Cafe.dart';
+import 'package:manage/Screen/OrderScreen_Cafe.dart';
+import 'package:manage/Screen/SelectionScreen.dart';
 import 'package:manage/Screen/loginScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.amber,
       ),
-      home: loginScreen(),
+      home: OrderScreen(),
     );
   }
 }
