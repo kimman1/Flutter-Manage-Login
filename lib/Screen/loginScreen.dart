@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:manage/Interactive_data/google_SignIn.dart';
 import 'package:manage/Model/UserModel.dart';
 import 'package:manage/Screen/CafeManagerScreen.dart';
+import 'package:manage/Screen/OrderScreen_Cafe.dart';
 import 'package:manage/Screen/SelectionScreen.dart';
 import 'package:manage/Screen/main_screen.dart';
 import 'package:manage/Screen/signup_page.dart';
@@ -20,18 +21,15 @@ class loginScreen extends StatefulWidget {
 }
 
 class loginScreenState extends State<loginScreen> {
-   bool _validate = false;
-    String validUserName (String value)
-      {
-        if(value != null)
-        {
-          return null;
-        }        
-        else
-        {
-          return "Please Input User Name!";
-        }
-      }
+  bool _validate = false;
+  String validUserName(String value) {
+    if (value != null) {
+      return null;
+    } else {
+      return "Please Input User Name!";
+    }
+  }
+
   String dropdownValue = 'Cafe Manager';
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -138,11 +136,10 @@ class loginScreenState extends State<loginScreen> {
                                 TextField(
                                   autofocus: true,
                                   focusNode: focusNodeEmail,
-                                  
-                                  onEditingComplete: () => 
-                                  {
-                                    
-                                    FocusScope.of(context).requestFocus(focusNodePassword)
+
+                                  onEditingComplete: () => {
+                                    FocusScope.of(context)
+                                        .requestFocus(focusNodePassword)
                                   },
                                   textInputAction: TextInputAction.next,
                                   //focusNode: myFocusNode,
@@ -153,7 +150,8 @@ class loginScreenState extends State<loginScreen> {
                                   textAlign: TextAlign.start,
                                   obscureText: false,
                                   decoration: InputDecoration(
-                                    errorText: validUserName(usernameController.text),
+                                    errorText:
+                                        validUserName(usernameController.text),
                                     hintText: "Input you Email",
                                     suffixIcon: Icon(
                                       Icons.email,
@@ -192,11 +190,11 @@ class loginScreenState extends State<loginScreen> {
                                   height: 10,
                                 ),
                                 TextField(
-                                  onEditingComplete: () =>
-                                  {
+                                  onEditingComplete: () => {
                                     //focusNodeEmail.unfocus(),
-                                    FocusScope.of(context).requestFocus(focusNodeLoginButton),
-                                  }, 
+                                    FocusScope.of(context)
+                                        .requestFocus(focusNodeLoginButton),
+                                  },
                                   focusNode: focusNodePassword,
                                   controller: passwordController,
                                   obscureText: true,
@@ -223,18 +221,16 @@ class loginScreenState extends State<loginScreen> {
                           ),
                         ],
                       ),
-                      DropdownButton<String>
-                        (
-                            value: dropdownValue,
-                            icon: const Icon(Icons.arrow_downward),
-                            elevation: 16,
+                      DropdownButton<String>(
+                          value: dropdownValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          elevation: 16,
                           style: const TextStyle(color: Colors.deepPurple),
                           underline: Container(
                             height: 2,
                             color: Colors.deepPurpleAccent,
                           ),
-                          onChanged: (String newValue)
-                          {
+                          onChanged: (String newValue) {
                             setState(() {
                               dropdownValue = newValue;
                             });
@@ -245,8 +241,7 @@ class loginScreenState extends State<loginScreen> {
                               value: value,
                               child: Text(value),
                             );
-                          }).toList()
-                      ),
+                          }).toList()),
                       SizedBox(
                         height: 20,
                       ),
@@ -283,10 +278,9 @@ class loginScreenState extends State<loginScreen> {
                         child: Center(
                           child: Container(
                             width: MediaQuery.of(context).size.width,
-                            child: 
-                            InkWell(
-                              focusNode: focusNodeLoginButton,
-                              //autofocus: true,
+                            child: InkWell(
+                                focusNode: focusNodeLoginButton,
+                                //autofocus: true,
                                 onTap: () async {
                                   User userSendAPI = User();
                                   userSendAPI.username =
@@ -294,37 +288,40 @@ class loginScreenState extends State<loginScreen> {
                                   userSendAPI.password =
                                       passwordController.text;
                                   Interactive_User inter = Interactive_User();
-                                    setState(() {
-                                      _showMaterialDialog("Notice", "Please waiting....");
-                                    });
-                                   responseCode1 = await inter.getUserLogin(userSendAPI);
                                   setState(() {
-                                      _dismissDialog();
-                                    if (responseCode1 == "success" ) {
-                                      if(userSendAPI.username == "admin")
-                                      {
-                                        
-                                        navi.PushnavigateToAnotherPage(context, SelectionScreen(tilte: userSendAPI.username,googleSignIn: googleSignIn, supportGoogle: _supportSignInGoogle, userFromDB: userSendAPI,));
-                                          }
-                                        else 
-                                        {
-                                          if(dropdownValue == "Cafe Manager")
-                                          {
-                                            
-                                            navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
-                                          }
-                                          else if(dropdownValue == "Schedule Manager")
-                                          {
-                                            print('not yet done');
-                                          }
+                                    _showMaterialDialog(
+                                        "Notice", "Please waiting....");
+                                  });
+                                  responseCode1 =
+                                      await inter.getUserLogin(userSendAPI);
+                                  setState(() {
+                                    _dismissDialog();
+                                    if (responseCode1 == "success") {
+                                      if (userSendAPI.username == "admin") {
+                                        navi.PushnavigateToAnotherPage(
+                                            context,
+                                            SelectionScreen(
+                                              tilte: userSendAPI.username,
+                                              googleSignIn: googleSignIn,
+                                              supportGoogle:
+                                                  _supportSignInGoogle,
+                                              userFromDB: userSendAPI,
+                                            ));
+                                      } else {
+                                        if (dropdownValue == "Cafe Manager") {
+                                          navi.PushnavigateToAnotherPage(
+                                              context, OrderScreen());
+                                        } else if (dropdownValue ==
+                                            "Schedule Manager") {
+                                          print('not yet done');
                                         }
+                                      }
                                     } else {
-                                     
-                                      DialogCreate createDialog =  DialogCreate();
-                                      createDialog.showMaterialDialog(context, "Notice","Login Failed");
-
+                                      DialogCreate createDialog =
+                                          DialogCreate();
+                                      createDialog.showMaterialDialog(
+                                          context, "Notice", "Login Failed");
                                     }
-                                    
                                   });
                                 },
                                 child: Ink(
@@ -468,41 +465,37 @@ class loginScreenState extends State<loginScreen> {
 
                                   googleSignIn.onCurrentUserChanged
                                       .listen((GoogleSignInAccount account) {
-                                    setState(() 
-                                    {
+                                    setState(() {
                                       _currentUser = account;
-                                      if (_currentUser != null) 
-                                      {
-                                        if(_currentUser.email.toString() == "kimman06@gmail.com")
-                                        {
-                                          navi.PopnavigateToAnotherPage(context);
+                                      if (_currentUser != null) {
+                                        if (_currentUser.email.toString() ==
+                                            "kimman06@gmail.com") {
+                                          navi.PopnavigateToAnotherPage(
+                                              context);
                                           navi.PushnavigateToAnotherPage(
-                                            context,
-                                            mainScreen(
-                                              title: _currentUser?.displayName,
-                                              supportGoogle:
-                                                  _supportSignInGoogle,
-                                              googleSignIn: googleSignIn,
-                                            ));
-                                        }
-                                        else
-                                        {
-                                          if(dropdownValue == "Cafe Manager")
-                                          {
-                                            navi.PopnavigateToAnotherPage(context);
-                                            navi.PushnavigateToAnotherPage(context, CafeManagerScreen());
-                                          }
-                                          else if (dropdownValue == "Schedule Manager")
-                                          {
+                                              context,
+                                              mainScreen(
+                                                title:
+                                                    _currentUser?.displayName,
+                                                supportGoogle:
+                                                    _supportSignInGoogle,
+                                                googleSignIn: googleSignIn,
+                                              ));
+                                        } else {
+                                          if (dropdownValue == "Cafe Manager") {
+                                            navi.PopnavigateToAnotherPage(
+                                                context);
+                                            navi.PushnavigateToAnotherPage(
+                                                context, CafeManagerScreen());
+                                          } else if (dropdownValue ==
+                                              "Schedule Manager") {
                                             setState(() {
                                               print('not yet done');
                                             });
                                           }
                                         }
                                       }
-                                      }
-                                      
-                                    );
+                                    });
                                   });
                                 },
                               ),
@@ -603,11 +596,12 @@ class loginScreenState extends State<loginScreen> {
       ),
     );
   }
-  
-   _dismissDialog() {
+
+  _dismissDialog() {
     Navigator.pop(context);
   }
-     void _showMaterialDialog(String Title, String Content) {
+
+  void _showMaterialDialog(String Title, String Content) {
     showDialog(
         context: context,
         builder: (context) {
@@ -623,6 +617,5 @@ class loginScreenState extends State<loginScreen> {
             ],
           );
         });
-     
   }
 }
